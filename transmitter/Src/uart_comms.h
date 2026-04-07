@@ -1,0 +1,1 @@
+/* HAL_UART_Transmit wrapper*/
