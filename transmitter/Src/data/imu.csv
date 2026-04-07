@@ -1,5 +1,4 @@
-Acceleration,,,Angular Velocity,,,Magnetometer,,
-X,Y,Z,X,Y,Z,X,Y,Z
+AccelerationX,Y,Z,Angular VelocityX,Y,Z,MagnetometerX,Y,Z
 4229,1466,8290,158,-2,-51,-99,188,241
 4330,1324,8299,171,-11,-49,-106,183,241
 4422,1231,8294,175,-14,-46,-87,177,240
