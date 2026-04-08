@@ -6,6 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
+#include <stddef.h>
+#include "FreeRTOS.h"
+
 
 #define MAX_PAYLOAD_SIZE 32 //Maximum bytes can be stored in payload
 #define MAX_PACKET_SIZE sizeof(TelemetryPacket_t)
@@ -15,23 +18,7 @@
 #define TELEMETRY_SOF 0xAA
 #define TELEMETRY_EOF 0x55
 
-#define RELIABLE 0
-#define UNRELIABLE 1
-
 #define POLY 0x1021 /* crc-ccitt mask */
-
-typedef enum {
-    PACKET_TYPE_GNSS,
-    PACKET_TYPE_BARO,
-    PACKET_TYPE_IMU,
-    PACKET_TYPE_BATTERY
-} PacketType_e;
-
-typedef struct {
-    PacketType_e type;
-    uint8_t      len;
-} PacketInfo_t;
-
 
 /* I used a fixed buffer for the payload as it is simple and predictable
     When I send the packet I only send the used portion*/
@@ -104,12 +91,32 @@ typedef struct
     uint16_t count;
 } HistoryRingBuffer;
 
+
+/* Helper enums and struct to construct packets */
+typedef enum {
+    RELIABLE,
+    UNRELIABLE
+} Reliability_e;
+
+typedef enum {
+    PACKET_TYPE_GNSS,
+    PACKET_TYPE_BARO,
+    PACKET_TYPE_IMU,
+    PACKET_TYPE_BATTERY
+} PacketType_e;
+
+typedef struct {
+    PacketType_e type;
+    uint8_t      len;
+    Reliability_e reliable;
+} PacketInfo_t;
+
 /* Using designated initialiser to specify the enum as the index */
 static const PacketInfo_t PACKET_INFO[] = {
-    [PACKET_TYPE_GNSS]     = { PACKET_TYPE_GNSS, sizeof(GNSSData_t)         },
-    [PACKET_TYPE_BARO]    = { PACKET_TYPE_BARO, sizeof(BarometerData_t)  },
-    [PACKET_TYPE_IMU]     = { PACKET_TYPE_IMU, sizeof(IMUData_t)         },
-    [PACKET_TYPE_BATTERY] = { PACKET_TYPE_BATTERY, sizeof(BatteryData_t) },
+    [PACKET_TYPE_GNSS]    = { PACKET_TYPE_GNSS, sizeof(GNSSData_t), RELIABLE        },
+    [PACKET_TYPE_BARO]    = { PACKET_TYPE_BARO, sizeof(BarometerData_t), UNRELIABLE },
+    [PACKET_TYPE_IMU]     = { PACKET_TYPE_IMU, sizeof(IMUData_t), UNRELIABLE        },
+    [PACKET_TYPE_BATTERY] = { PACKET_TYPE_BATTERY, sizeof(BatteryData_t), RELIABLE  },
 };
 
 uint16_t calculateCrc(const uint8_t* data, uint8_t len);

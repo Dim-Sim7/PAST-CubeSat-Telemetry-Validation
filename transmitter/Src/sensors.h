@@ -4,11 +4,10 @@
 #define SENSORS_H
 
 #include "telemetry.h"
-#include "stdio.h"
-#include "FreeRTOS.h" 
+#include "testdata.h"
 #include "queue.h"
 
+void readEmbeddedData(QueueHandle_t queue, uint16_t* cur_seq, PacketType_e type);
 
-typedef int (*ParseLineFn)(const char* line, void* data);
 
 #endif
