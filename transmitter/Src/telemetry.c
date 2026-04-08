@@ -22,12 +22,14 @@ uint16_t calculateCrc(const uint8_t* data, uint8_t len) {
 }
 
 /* Protocol byte order: little-endian (native ARM Cortex-M) */ 
-void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, uint16_t* cur_seq) {
+void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, uint32_t* cur_seq) {
     const PacketInfo_t* info = &PACKET_INFO[type];
 
     packet->sof = TELEMETRY_SOF;
     packet->type = info->type;
+    taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
+    taskEXIT_CRITICAL();
     packet->reliable = info->reliable;
     packet->len = info->len;
     packet->eof = TELEMETRY_EOF;
@@ -39,45 +41,5 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
 
 }
 
-/* Helper functions for the history buffer */
-HistoryRingBufferEntry* getFromHistorySpecific(HistoryRingBuffer* historyBuffer, int seq) {
-    for (int i = 0; i < historyBuffer->count; ++i) {
-        // walk backwards from head through valid entries
-        int idx = (historyBuffer->head - 1 - i + HISTORY_SIZE) & HISTORY_MASK; // + HISTORY_SIZE prevents negative idx
-        if (historyBuffer->entries[idx].seq == seq) {
-            return &historyBuffer->entries[i];
-        }
-    }
-    return NULL;
-}
-
-HistoryRingBufferEntry* getFromHistory(HistoryRingBuffer* historyBuffer) {
-    if (historyBuffer->count == 0) {
-        return NULL;
-    }
-    if (historyBuffer->tail == historyBuffer->head) {
-        return NULL;
-    }
-
-    HistoryRingBufferEntry* entry = &historyBuffer->entries[historyBuffer->tail];
-    historyBuffer->tail = (historyBuffer->head + 1) & HISTORY_MASK;
-
-    return entry;
-}
-
-void addToHistory(HistoryRingBuffer* historyBuffer, TelemetryPacket_t* packet) {
-    HistoryRingBufferEntry* entry = &historyBuffer->entries[historyBuffer->head];
-
-    entry->seq = packet->seq;
-    entry->size = packet->len;
-
-    memcpy(entry->data, packet->payload, packet->len);
-
-    historyBuffer->head = (historyBuffer->head + 1) & HISTORY_MASK;
-
-    if (historyBuffer->count < HISTORY_SIZE) {
-        historyBuffer->count++;
-    }
-}
 
 

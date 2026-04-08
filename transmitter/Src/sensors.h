@@ -7,7 +7,9 @@
 #include "testdata.h"
 #include "queue.h"
 
-void readEmbeddedData(QueueHandle_t queue, uint16_t* cur_seq, PacketType_e type);
+void readEmbeddedData(QueueHandle_t queue, uint32_t* cur_seq, size_t* idx, 
+                            PacketType_e type, const void* embeddedData, 
+                            size_t dataCount, size_t dataSize, uint32_t* dropped_packets);
 
 
 #endif
