@@ -1,6 +1,6 @@
 #include "telemetry.h"
 
-/* crc algorithm from here -> https://srecord.sourceforge.net/crc16-ccitt.html */
+/* crc algorithm derived from here -> https://srecord.sourceforge.net/crc16-ccitt.html */
 uint16_t calculateCrc(const uint8_t* data, uint8_t len) {
     uint16_t crc = 0xffff;
     uint8_t v = 0x80;
@@ -28,7 +28,7 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
     packet->sof = TELEMETRY_SOF;
     packet->type = info->type;
     packet->seq = (*cur_seq)++;
-    packet->reliable = UNRELIABLE;
+    packet->reliable = info->reliable;
     packet->len = info->len;
     packet->eof = TELEMETRY_EOF;
 
@@ -41,8 +41,7 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
 
 /* Helper functions for the history buffer */
 HistoryRingBufferEntry* getFromHistorySpecific(HistoryRingBuffer* historyBuffer, int seq) {
-    int i;
-    for (i = 0; i < historyBuffer->count; ++i) {
+    for (int i = 0; i < historyBuffer->count; ++i) {
         // walk backwards from head through valid entries
         int idx = (historyBuffer->head - 1 - i + HISTORY_SIZE) & HISTORY_MASK; // + HISTORY_SIZE prevents negative idx
         if (historyBuffer->entries[idx].seq == seq) {
