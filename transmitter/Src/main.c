@@ -18,23 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "portmacro.h"
-#include "projdefs.h"
-#include "stm32l4xx_hal_def.h"
-#include "stm32l4xx_hal_uart.h"
-#include "telemetry.h"
-#include "testdata.h"
-#include "uart_comms.h"
-#include "sensors.h"
-#include "ring_buffer.h"
-#include "task.h"
-#include "queue.h"
+
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -63,160 +51,62 @@ UART_HandleTypeDef huart2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
+void Error_Handler(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-xTaskHandle Read_GNSS;
-xTaskHandle Read_BAROMETER;
-xTaskHandle Read_IMU;
-xTaskHandle Read_BATTERY;
-xTaskHandle Transmit_Packets;
-xTaskHandle Retransmit_Packets;
+TaskHandle_t Read_GNSS;
+TaskHandle_t Read_BAROMETER;
+TaskHandle_t Read_IMU;
+TaskHandle_t Read_BATTERY;
+TaskHandle_t Transmit_Packets;
+TaskHandle_t Retransmit_Packets;
 
-xQueueHandle Packet_Queue;
-xQueueHandle Retransmit_Queue;
+QueueHandle_t Packet_Queue;
+QueueHandle_t Retransmit_Queue;
 
-HistoryRingBuffer historyBuffer;
+/* Master running counter for packets */
+volatile uint32_t cur_seq = 0;
+volatile uint32_t dropped_packets = 0;
 
-uint32_t cur_seq = 0;
-uint32_t dropped_packets = 0;
-static const size_t data_count = 50; /* 50 points of data in each data set */
 
-/* --------- READING SENSOR DATA --------- */
-/* Goal is to simulate a real telemetry stream where different types of data are sent at random intervals */
-void Read_GNSS_Producer() 
-{
-  const TickType_t delay = pdMS_TO_TICKS(5 + rand() % 20); //random delay
-  static size_t gnss_idx = 0;
-  while(1) 
-  {
-    readEmbeddedData(Packet_Queue, &cur_seq, &gnss_idx, PACKET_TYPE_GNSS, (const void*)gnssData, 
-    data_count, sizeof(gnssData[0]), &dropped_packets);
-    vTaskDelay(delay);
-  }
-}
 
-void Read_Barometer_Producer() 
-{
-  const TickType_t delay = pdMS_TO_TICKS(5 + rand() % 15);
-  static size_t baro_idx = 0;
-  while(1) 
-  {
-    readEmbeddedData(Packet_Queue, &cur_seq, &baro_idx, PACKET_TYPE_BARO, (const void*)baroData, 
-    data_count, sizeof(baroData[0]), &dropped_packets);
-    vTaskDelay(delay);
-  }
-}
 
-void Read_IMU_Producer() 
-{
-  const TickType_t delay = pdMS_TO_TICKS(5 + rand() % 5);
-  static size_t imu_idx = 0;
-  while(1) 
-  {
-    readEmbeddedData(Packet_Queue, &cur_seq, &imu_idx, PACKET_TYPE_IMU, (const void*)imuData, 
-    data_count, sizeof(imuData[0]), &dropped_packets);
-    vTaskDelay(delay);
-  }
-}
-
-void Read_Battery_Producer() 
-{
-  const TickType_t delay = pdMS_TO_TICKS(5 + rand() % 30);
-  static size_t battery_idx = 0;
-  while(1) 
-  {
-    readEmbeddedData(Packet_Queue, &cur_seq, &battery_idx, PACKET_TYPE_BATTERY, (const void*)batteryData, 
-    data_count, sizeof(batteryData[0]), &dropped_packets);
-    vTaskDelay(delay);
-  }
-}
-
-/* Consumer task. Takes from the packet queue and transmits over UART 
-    Need to be cautious of overflow as we have multiple producers filling up the queue
-    We can implement another FIFO packet queue that continuously takes packets while 
-    we are sending out with UART. HAL_UART_Transmit_IT is an interrupt driven transmit that allows us
-    to continue as the bytes are being sent out, dont have to wait until all bytes are sent to continue
-
-    Also can use a ring buffer specifically for the transmit, therefore can consume packets from the queue
-    while waiting to transmit
-    */
-void Transmit_Packets_Consumer(void* argument) 
-{
-  TelemetryPacket_t packet = {0};
-  uint16_t txSize;
-  uint32_t tickDelay = pdMS_TO_TICKS(10);
-  RingBuffer txBuffer;
-  /* TODO: USE THE TXBUFFER TO STORE WHILE TRANSMITTING */
-  while (1) 
-  {
-    if(xQueueReceive(Packet_Queue, &packet, tickDelay) == pdTRUE) 
-    {
-      /* Calculate actual size of packet */
-      txSize = sizeof(TelemetryPacket_t) - MAX_PAYLOAD_SIZE + packet->len;
-      HAL_UART_Transmit_IT(&huart2, (uint8_t*)&packet, txSize);
-    }
-  }
-  
-}
 /* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
+    Followed different tutorials and resources to understand how to set up tasks with freeRTOS
+    https://medium.com/@johnehk86/79-creating-and-running-freertos-tasks-582da0641df3
   */
 int main(void)
 {
 
-  /* USER CODE BEGIN 1 */
-  static uint8_t serial_string[51] = "";
-
-  /* USER CODE END 1 */
-
-  /* MCU Configuration--------------------------------------------------------*/
-
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
-
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
   SystemClock_Config();
 
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
-  Packet_Queue = xQueueCreate(128, sizeof(TelemetryPacket_t));
+
+  Packet_Queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(TelemetryPacket_t));
   if (Packet_Queue == NULL) {
-    HAL_UART_Transmit(&huart1, (uint8_t*)"Queue was not created successfully", 34, HAL_MAX_DELAY);
+    HAL_UART_Transmit(&huart2, (uint8_t*)"Queue was not created successfully", 34, HAL_MAX_DELAY);
   }
+  
+  extern UBaseType_t ulNextRand;
+  ulNextRand = HAL_GetTick(); // varies based on boot time
+  /* Create tasks */
+  CreateTasks();
+  /* Start scheduler -- FreeRTOS takes over*/
+  vTaskStartScheduler();
 
-  /* Transmit the data using huart2, transmits 51 bytes with a 10ms timeout */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* Send telemetry data here, build packets, etc... meat goes here */
-    HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-    HAL_Delay(1000);
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
   }
-  /* USER CODE END 3 */
 }
 
 /**
@@ -361,4 +251,19 @@ void assert_failed(uint8_t *file, uint32_t line)
      ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
+
+void vApplicationMallocFailedHook(void) {
+    // Optional: print error, blink LED, log, reset, halt
+    taskDISABLE_INTERRUPTS();
+    for (;;) {}
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
+    (void)pcTaskName;
+    (void)xTask;
+    taskDISABLE_INTERRUPTS();
+    for (;;) {}
+}
+
+
 #endif /* USE_FULL_ASSERT */

@@ -1,0 +1,158 @@
+[
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/main.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/main.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/main.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/main.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/stm32l4xx_hal_msp.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/stm32l4xx_hal_msp.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/stm32l4xx_hal_msp.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/stm32l4xx_hal_msp.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/stm32l4xx_it.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/stm32l4xx_it.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/stm32l4xx_it.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/stm32l4xx_it.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/system_stm32l4xx.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/system_stm32l4xx.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/system_stm32l4xx.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/system_stm32l4xx.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/syscall.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/syscall.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/syscall.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/syscall.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DRTE_DEVICE_STARTUP_STM32L4XX -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -std=gnu11 -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/sysmem.c.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/sysmem.c",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/sysmem.c",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/sysmem.c.o"
+},
+{
+  "directory": "/home/dim-sim/workspace/uni/past/telemetry_validation/build",
+  "command": "/usr/bin/gcc-12 -DDEBUG -DSTM32L432xx -DUSE_HAL_DRIVER -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/STM32L4xx_HAL_Driver/Inc -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Device/ST/STM32L4xx/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Drivers/CMSIS/Include -I/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter -g -fstack-usage -Wall -Wextra -Wpedantic -Wno-unused-parameter -x assembler-with-cpp -MMD -MP -O0 -g3 -ggdb -o CMakeFiles/telemetry_transmitter.dir/Src/startup_stm32l432xx.S.o -c /home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/startup_stm32l432xx.S",
+  "file": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/Src/startup_stm32l432xx.S",
+  "output": "CMakeFiles/telemetry_transmitter.dir/Src/startup_stm32l432xx.S.o"
+}
+]

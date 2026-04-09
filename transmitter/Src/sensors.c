@@ -1,9 +1,9 @@
 #include "sensors.h"
 
 /* */
-void readEmbeddedData(QueueHandle_t queue, uint32_t* cur_seq, size_t* idx, 
+void readEmbeddedData(QueueHandle_t queue, volatile uint32_t* cur_seq, size_t* idx, 
                             PacketType_e type, const void* embeddedData, 
-                            size_t dataCount, size_t dataSize, uint32_t* dropped_packets) 
+                            size_t dataCount, size_t dataSize, volatile uint32_t* dropped_packets) 
 {
     /* Since data is copied into the queue, we can use one packet to create all packets*/
     TelemetryPacket_t packet = {0};
@@ -16,6 +16,6 @@ void readEmbeddedData(QueueHandle_t queue, uint32_t* cur_seq, size_t* idx,
         (*dropped_packets)++;
         taskEXIT_CRITICAL();
     }
-    *idx = (idx + 1) % dataCount; /* Index back over array */
+    *idx = (*idx + 1) % dataCount; /* Index back over array */
     vTaskDelay(pdMS_TO_TICKS(10));
 }

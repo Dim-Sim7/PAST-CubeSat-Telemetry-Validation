@@ -8,21 +8,19 @@
 #include <errno.h>
 #include <stddef.h>
 #include "FreeRTOS.h"
+#include "task.h"
 
-
-#define MAX_PAYLOAD_SIZE 32 //Maximum bytes can be stored in payload
-#define MAX_PACKET_SIZE sizeof(TelemetryPacket_t)
-
-
-#
+/* Maximum bytes that can be stored in payload
+    If we have a data struct that goes over 32 bytes we need to adjust this*/
+#define MAX_PAYLOAD_SIZE 32
 
 #define TELEMETRY_SOF 0xAA
 #define TELEMETRY_EOF 0x55
 
-#define POLY 0x1021 /* crc-ccitt mask */
+#define POLY 0x1021 /* for crc-ccitt mask */
 
 /* I used a fixed buffer for the payload as it is simple and predictable
-    When I send the packet I only send the used portion*/
+When I send the packet I only send the used portion*/
 typedef struct __attribute__((__packed__))
 {
     uint8_t sof;
@@ -34,6 +32,8 @@ typedef struct __attribute__((__packed__))
     uint16_t crc;
     uint8_t eof;
 } TelemetryPacket_t;
+
+#define MAX_PACKET_SIZE sizeof(TelemetryPacket_t)
 
 typedef struct __attribute__((__packed__))
 {
@@ -96,22 +96,10 @@ typedef struct {
     Reliability_e reliable;
 } PacketInfo_t;
 
-/* Used to cycle between types and read data */
-static const PacketType_e PACKET_TYPES[] = {
-    PACKET_TYPE_GNSS,
-    PACKET_TYPE_BARO,
-    PACKET_TYPE_IMU,
-    PACKET_TYPE_BATTERY
-};
-/* Using designated initialiser to specify the enum as the index */
-static const PacketInfo_t PACKET_INFO[] = {
-    [PACKET_TYPE_GNSS]    = { PACKET_TYPE_GNSS, sizeof(GNSSData_t), UNRELIABLE      },
-    [PACKET_TYPE_BARO]    = { PACKET_TYPE_BARO, sizeof(BarometerData_t), UNRELIABLE },
-    [PACKET_TYPE_IMU]     = { PACKET_TYPE_IMU, sizeof(IMUData_t), UNRELIABLE        },
-    [PACKET_TYPE_BATTERY] = { PACKET_TYPE_BATTERY, sizeof(BatteryData_t), RELIABLE  }
-};
+extern const PacketInfo_t PACKET_INFO[];
+extern const PacketType_e PACKET_TYPES[];
 
 uint16_t calculateCrc(const uint8_t* data, uint8_t len);
-void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, uint32_t* cur_seq);
+void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, volatile uint32_t* cur_seq);
 
 #endif

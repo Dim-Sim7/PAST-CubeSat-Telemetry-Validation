@@ -1,46 +1,59 @@
 #include "ring_buffer.h"
+#include "telemetry.h"
 
-RingBufferEntry* findPacketBySeq(RingBuffer* buffer, uint32_t seq) {
-    for (int i = 0; i < buffer->count; ++i) {
+inline int RingBuffer_Full(RingBuffer* b) 
+{
+    return ((uint16_t)(b->head - b->tail) == b->size);
+}
+inline int RingBuffer_Empty(RingBuffer* b) 
+{
+    return (b->head == b->tail);
+}
+
+int findPacketBySeq(RingBuffer* buffer, uint32_t seq, RingBufferEntry* out) 
+{
+    uint16_t count = (uint16_t)(buffer->head - buffer->tail);
+    for (int i = 0; i < count; i++) 
+    {
         // walk backwards from head through valid entries
-        int idx = (buffer->head - 1 - i + BUFFER_SIZE) & BUFFER_MASK;
-        if (buffer->entries[idx].seq == seq) {
-            return &buffer->entries[idx];
+        uint16_t idx = (buffer->head - 1 - i) & buffer->mask;
+        if (buffer->entries[idx].seq == seq) 
+        {
+            memcpy(out, &buffer->entries[idx], sizeof(RingBufferEntry));
+            return 0;
         }
     }
-    return NULL;
+    return -1;
 }
 
-RingBufferEntry* dequeue(RingBuffer* buffer) {
-    if (buffer->count == 0) {
-        return NULL;
-    }
-    if (buffer->tail == buffer->head) {
-        return NULL;
-    }
+int dequeue(RingBuffer* buffer, RingBufferEntry* out) 
+{
+    if (RingBuffer_Empty(buffer)) return -1;
 
-    RingBufferEntry* entry = &buffer->entries[buffer->tail];
-    buffer->tail = (buffer->tail + 1) & BUFFER_MASK;
-    buffer->count--;
-
-    return entry;
+    uint16_t idx = buffer->tail & buffer->mask; // bit-wise wrap around. Much faster than modulus
+    memcpy(out, &buffer->entries[idx], sizeof(RingBufferEntry));
+    buffer->tail++; // increment only after data is copied
+    return 0;
 }
 
-void enqueue(RingBuffer* buffer, TelemetryPacket_t* packet) {
-    RingBufferEntry* entry = &buffer->entries[buffer->head];
+void enqueue(RingBuffer* buffer, TelemetryPacket_t* packet) 
+{
+    if (RingBuffer_Full(buffer)) buffer->tail++; // drop oldest packet in buffer
 
+    uint16_t idx = buffer->head & buffer->mask;
+    RingBufferEntry* entry = &buffer->entries[idx];
     entry->seq = packet->seq;
-    /* Calculating size of the actual packet */
     entry->size = sizeof(TelemetryPacket_t) - MAX_PAYLOAD_SIZE + packet->len;
-
     memcpy(entry->data, packet, entry->size);
-
-    buffer->head = (buffer->head + 1) & BUFFER_MASK;
-
-    if (buffer->count < BUFFER_SIZE) {
-        buffer->count++;
-    } else {
-        //overwrite oldest
-        buffer->tail = (buffer->tail + 1) & BUFFER_MASK;
-    }
+    buffer->head++;
 }
+
+void enqueueRaw(RingBuffer* buffer, RingBufferEntry* entry) 
+{
+    if (RingBuffer_Full(buffer)) buffer->tail++; // drop oldest packet in buffer
+    uint16_t idx = buffer->head & buffer->mask;
+    memcpy(&buffer->entries[idx], entry, sizeof(RingBufferEntry));
+    buffer->head++;
+}
+
+
