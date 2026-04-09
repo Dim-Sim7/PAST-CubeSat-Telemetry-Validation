@@ -1,0 +1,3 @@
+/home/dim-sim/workspace/uni/past/telemetry_validation/build/CMakeFiles/telemetry_transmitter.dir
+/home/dim-sim/workspace/uni/past/telemetry_validation/build/CMakeFiles/edit_cache.dir
+/home/dim-sim/workspace/uni/past/telemetry_validation/build/CMakeFiles/rebuild_cache.dir

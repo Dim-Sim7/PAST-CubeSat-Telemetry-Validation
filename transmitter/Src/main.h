@@ -1,68 +1,40 @@
-/* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * @file           : main.h
-  * @brief          : Header for main.c file.
-  *                   This file contains the common defines of the application.
-  ******************************************************************************
-  * @attention
-  *
-  * Copyright (c) 2026 STMicroelectronics.
-  * All rights reserved.
-  *
-  * This software is licensed under terms that can be found in the LICENSE file
-  * in the root directory of this software component.
-  * If no LICENSE file comes with this software, it is provided AS-IS.
-  *
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-/* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __MAIN_H
 #define __MAIN_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/* Includes ------------------------------------------------------------------*/
+//#include "projdefs.h"
+#include "ring_buffer.h"
+#include "sensors.h"
+#include "stm32l4xx_hal_uart.h"
 #include "stm32l4xx_hal.h"
 #include "FreeRTOS.h"
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
+#include "tasks.h"
+#include "queue.h"
+#include <stdint.h>
 
-/* USER CODE END Includes */
 
-/* Exported types ------------------------------------------------------------*/
-/* USER CODE BEGIN ET */
-
-/* USER CODE END ET */
-
-/* Exported constants --------------------------------------------------------*/
-/* USER CODE BEGIN EC */
-
-/* USER CODE END EC */
-
-/* Exported macro ------------------------------------------------------------*/
-/* USER CODE BEGIN EM */
-
-/* USER CODE END EM */
-
-/* Exported functions prototypes ---------------------------------------------*/
 void Error_Handler(void);
+// /* Global task handles */
+// extern TaskHandle_t Read_GNSS;
+// extern TaskHandle_t Read_BAROMETER;
+// extern TaskHandle_t Read_IMU;
+// extern TaskHandle_t Read_BATTERY;
+// extern TaskHandle_t Transmit_Packets;
+// extern TaskHandle_t Retransmit_Packets;
 
-/* USER CODE BEGIN EFP */
+// /* Global queues */
+// extern QueueHandle_t Packet_Queue;
+// extern QueueHandle_t Retransmit_Queue;
 
-/* USER CODE END EFP */
+// /* Packet counters */
+// extern volatile uint32_t cur_seq;
+// extern volatile uint32_t dropped_packets;
 
-/* Private defines -----------------------------------------------------------*/
+/* Hardware pins */
 #define LED_Pin GPIO_PIN_3
 #define LED_GPIO_Port GPIOB
-
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
 }
