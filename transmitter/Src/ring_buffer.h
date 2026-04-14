@@ -4,14 +4,29 @@
 #define RING_BUFFER_H
 
 #include "telemetry.h"
+#include "tmr.h"
 
+/* Triple Modular Redundancy for head and tail */
+#define RB_HEAD(b) TMR_Vote_size((b)->head_a, (b)->head_b, (b)->head_c)
+#define RB_TAIL(b) TMR_Vote_size((b)->tail_a, (b)->tail_b, (b)->tail_c)
 
+#define RB_SET_HEAD(b, v) do { \
+    (b)->head_a = (v);         \
+    (b)->head_b = (v);         \
+    (b)->head_c = (v);         \
+} while(0)
 
-typedef struct __attribute__((__packed__))
+#define RB_SET_TAIL(b, v) do { \
+    (b)->tail_a = (v);         \
+    (b)->tail_b = (v);         \
+    (b)->tail_c = (v);         \
+} while(0)
+
+typedef struct 
 {
     uint16_t size;                 // actual size of the stored packet
     uint32_t seq;                  // seq of the stored packet
-    uint8_t data[MAX_PACKET_SIZE]; // data of the stored packet MAX_PACKET_SIZE = sizeof(TelemetryPacket_t)
+    uint8_t data[MAX_PACKET_SIZE]; // pre-packed data of the stored packet MAX_PACKET_SIZE = sizeof(TelemetryPacket_t)
 } RingBufferEntry;
 
 /* Volatile is used to ensure the program checks the value
@@ -21,9 +36,9 @@ typedef struct __attribute__((__packed__))
 typedef struct
 {
     RingBufferEntry* entries;
-    volatile uint16_t head;
-    volatile uint16_t tail;
-    uint16_t size;
+    volatile uint16_t head_a, head_b, head_c;
+    volatile uint16_t tail_a, tail_b, tail_c;
+    uint16_t size; /* The number of entries in the array MUST be a power of 2*/
     uint16_t mask; /* size - 1  ---- Used for bit-wise index wrap arounds*/
 } RingBuffer;
 

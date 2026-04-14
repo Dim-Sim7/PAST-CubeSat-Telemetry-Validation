@@ -1,24 +1,32 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "C/C++ Runner: Debug Session",
-      "type": "cppdbg",
-      "request": "launch",
-      "args": [],
-      "stopAtEntry": false,
-      "externalConsole": false,
-      "cwd": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter",
-      "program": "/home/dim-sim/workspace/uni/past/telemetry_validation/transmitter/build/Debug/outDebug",
-      "MIMode": "gdb",
-      "miDebuggerPath": "gdb",
-      "setupCommands": [
+    "version": "0.2.0",
+    "configurations": [
         {
-          "description": "Enable pretty-printing for gdb",
-          "text": "-enable-pretty-printing",
-          "ignoreFailures": true
+            "name": "STM32 Debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "cwd": "${workspaceFolder}/transmitter",
+            "executable": "${workspaceFolder}/transmitter/build/Debug/telemetry_transmitter.elf",
+            "device": "STM32L4xx",
+            "configFiles": [
+                "interface/stlink.cfg",
+                "target/stm32l4x.cfg"
+            ],
+            "runToEntryPoint": "main",
+            "swoConfig": {
+                "enabled": true,
+                "cpuFrequency": 80000000,
+                "swoFrequency": 2000000,
+                "source": "probe",
+                "decoders": [
+                    {
+                        "type": "console",
+                        "label": "ITM",
+                        "port": 0
+                    }
+                ]
+            }
         }
-      ]
-    }
-  ]
+    ]
 }

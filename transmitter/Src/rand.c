@@ -3,9 +3,6 @@
 /* Random number generator found from -> https://github.com/CTSRD-CHERI/FreeRTOS-Demos-CHERI-RISC-V/blob/master/bsp/rand.c */
 /* rand() was not working so I found the freeRTOS function xApplicationGetRandomNumber */
 
-/* Temporary fix - defines "uxrandom" function */
-
-
 UBaseType_t ulNextRand;
 
 UBaseType_t uxRand( void )
@@ -14,7 +11,7 @@ UBaseType_t uxRand( void )
 
     /* Utility function to generate a pseudo random number. */
     ulNextRand = ( ulMultiplier * ulNextRand ) + ulIncrement;
-    return( ( int ) ( ulNextRand >> 16UL ) & 0x7fffUL );
+    return((int)(ulNextRand >> 16UL) & 0x7fffUL);
 }
 
 /*
@@ -23,7 +20,7 @@ UBaseType_t uxRand( void )
  * The macros ipconfigRAND32() and configRAND32() are not in use
  * anymore in FreeRTOS+TCP.
  */
-BaseType_t xApplicationGetRandomNumber( uint32_t * pulNumber )
+BaseType_t xApplicationGetRandomNumber(uint32_t * pulNumber)
 {
     *pulNumber = uxRand();
     return pdTRUE;

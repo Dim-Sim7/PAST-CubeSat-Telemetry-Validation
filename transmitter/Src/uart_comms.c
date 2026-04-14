@@ -1,10 +1,34 @@
 #include "uart_comms.h"
+#include "history.h"
+#include "portmacro.h"
+#include "projdefs.h"
+#include "stm32l432xx.h"
+#include "telemetry.h"
+
+
 
 /* This is a single packet buffer for the HAL_UART_TRANSMIT_DMA process. 
   static ensures this is not overwritten until after the packet is transmitted */
-  /* Volatile ensures this isn't cached and accessed directly each time it is used */
-static volatile uint8_t uartTxBusy = 0;
 static RingBufferEntry txScratch;
+
+/* Volatile ensures this isn't cached and accessed directly each time it is used */
+static volatile BaseType_t uartTxBusyA = pdFALSE;
+static volatile BaseType_t uartTxBusyB = pdFALSE;
+static volatile BaseType_t uartTxBusyC = pdFALSE;
+
+static RingBufferEntry txEntries[TX_BUFFER_SIZE];
+static RingBuffer txBuffer = {
+    .entries = txEntries,
+    .head_a  = 0, .head_b = 0, .head_c = 0,
+    .tail_a  = 0, .tail_b = 0, .tail_c = 0,
+    .size    = TX_BUFFER_SIZE,
+    .mask    = TX_BUFFER_SIZE - 1
+};
+
+static inline BaseType_t UartTxBusy(void)
+{
+    return TMR_Vote_BaseType(uartTxBusyA, uartTxBusyB, uartTxBusyC);
+}
 
 /* This function dequeues a packet from txBuffer ring buffer, store it in history
     and attempts to transmit using direct memory access    
@@ -21,16 +45,62 @@ static RingBufferEntry txScratch;
     http://www.simplyembedded.org/tutorials/msp430-interrupts/
     https://community.st.com/t5/stm32-mcus/faq-stm32-hal-uart-driver-api-and-callbacks/ta-p/49301
    */
-void StartUartTx(void) 
+/* Returns pdTRUE if DMA was successfully started */
+static BaseType_t StartUartTx(void)
 {
-  if(uartTxBusy) return;
+    dequeue(&txBuffer, &txScratch);
+    /* Transmit via direct memory access method - non-blocking. Completion signalled via HAL_UART_TxCpltCallback() */
+    if (HAL_UART_Transmit_DMA(&huart2, txScratch.data, txScratch.size) == HAL_OK)
+    {
+      /* save sent packet into history for retransmit. Locally lost packets are discarded at the moment */
+      addHistoryRaw(&txScratch); 
+      return pdTRUE;
+    }
+    else
+    {
+      return pdFALSE;
+    }
+}
 
-  if (dequeue(&txBuffer, &txScratch) == 0) // copy into stable memory
+/* Called by Transmit_Packets_Consumer() task. enqueues a packet to the txBuffer
+  and calls StartUartTx to transmit the packet. Includes critical sections to prevent
+  race conditions*/
+BaseType_t UartTx_Enqueue(TelemetryPacket_t *packet)
+{
+  /* This Critical section masks interrupts to prevent TxCpltCallback() from firing
+      between the enqueue and the UartTxBusy() check. Without this, the ISR could dequeue
+      the entry we just enqueued and set uartTxBusy = pdFALSE before we read it, causing us
+      to call StartUartTx() concurrently with the ISR*/
+  taskENTER_CRITICAL();
+
+  enqueue(&txBuffer, packet);
+
+  if (!UartTxBusy())
   {
-    uartTxBusy = 1;
-    enqueueRaw(&historyBuffer, &txScratch); //save into history for retransmit
-    HAL_UART_Transmit_DMA(&huart2, txScratch.data, txScratch.size);
+    /* Mark busy before exiting the critical section so that if a context switch
+   occurs before StartUartTx() is called, any other task calling UartTx_Enqueue()
+   will see uartTxBusy = pdTRUE and not attempt to also call StartUartTx() */
+    SET_BUSY_TRUE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
+
+    /* Exit critical section before calling StartUartTx() as the transmit can be slow and must
+    not run wih interrupts masked. uarTxBusy = pdTRUE ensure the ISR will not interfere if it fires during the DMA setup*/
+    taskEXIT_CRITICAL();
+    if (StartUartTx() != pdTRUE) /* Attempt to send packet */
+    {
+      /* DMA failed - reset busy flag so the pipeline is not pemanently stalled.
+      Re enter critical section to write uartTxBusym as the ISR could fire at any point*/
+      taskENTER_CRITICAL();
+      SET_BUSY_FALSE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
+      taskEXIT_CRITICAL();
+    }
   }
+  else
+  {
+    /* UART is already busy transmitting. The packet has been enqueued into txBuffer
+    and will be picked up automatically by HAL_UART_TxCplyCallback() when the current transfer ends*/
+    taskEXIT_CRITICAL();
+  }
+  return pdTRUE;
 }
 
 /* The end of the operation is indicated by a callback function: either transmit / receive complete or error.
@@ -39,9 +109,10 @@ the user can declare the Tx / Rx callback again in the application and customize
 about the process completion and to execute some application code
 https://community.st.com/t5/stm32-mcus/faq-stm32-hal-uart-driver-api-and-callbacks/ta-p/49301 */
 
-/* This is called automatically once a packet has been fully sent out from HAL_UART_Transmit_DMA().
-  I need to start the transfer of another packet if the buffer isn't empty
-  or signal that it is no longer busy*/
+/* Called automatically by the HAL once HAL_UART_Transmit_DMA() completes.
+   Runs in ISR context and interrupts at this priority are already masked,
+   so no additional critical section or FreeRTOS API calls are needed.
+   Responsible for keeping the TX pipeline running until txBuffer is drained. */
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -49,23 +120,30 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
   {
     if (!RingBuffer_Empty(&txBuffer))
     {
-      StartUartTx();
+      /* More packets waiting -- immediately kick off next DMA transfer.
+        txScratch is safe to overwrite here because the previous DMA transfer
+        has fully completed before this callback fires*/
+      if (StartUartTx() != pdTRUE)
+      {
+        /* DMA failed -- release busy flagh so the consumer task can attempt
+        to restart the pipeline on the next packet arrival*/
+        SET_BUSY_FALSE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
+      }
     } 
     else 
     {
-      uartTxBusy = 0;
+      /* Buffer is empty / has been drained. Mark UART as idle. The consumer
+        task will set uartTxBusy = pdTRUE and call StartUartTx() when the next packet arrives. */
+      SET_BUSY_FALSE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
     }
   }
 }
 
-uint8_t UartTxBusy(void)
-{
-    return uartTxBusy;
-}
-
-/* printf -> _write -> __io_putchar -> HAL_UART_Transmit*/
+/* https://www.embedded-communication.com/en/misc/printf-with-st-link/ */
+#ifdef DEBUG
 int __io_putchar(int ch)
 {
-    HAL_UART_Transmit(&huart2, (uint8_t*)&ch, 1, HAL_MAX_DELAY);
+    ITM_SendChar(ch);
     return ch;
 }
+#endif

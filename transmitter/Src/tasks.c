@@ -1,11 +1,21 @@
 #include "tasks.h"
+#include "ring_buffer.h"
+#include "uart_comms.h"
 
+/* definitions */
+TaskHandle_t Read_GNSS;
+TaskHandle_t Read_BAROMETER;
+TaskHandle_t Read_IMU;
+TaskHandle_t Read_BATTERY;
+TaskHandle_t Transmit_Packets;
+TaskHandle_t Retransmit_Packets;
 
+QueueHandle_t Packet_Queue;
+QueueHandle_t Retransmit_Queue;
 
-RingBufferEntry txEntries[TX_BUFFER_SIZE];
-RingBufferEntry historyEntries[HISTORY_BUFFER_SIZE];
-RingBuffer txBuffer = { .entries = txEntries, .head = 0, .tail = 0, .size = TX_BUFFER_SIZE, .mask = TX_BUFFER_SIZE - 1};
-RingBuffer historyBuffer = { .entries = historyEntries, .head = 0, .tail = 0, .size = HISTORY_BUFFER_SIZE, .mask = HISTORY_BUFFER_SIZE - 1 };
+volatile uint32_t cur_seq         = 0;
+volatile uint32_t dropped_packets = 0;
+
 /* --------- READING SENSOR DATA --------- */
 /* Goal is to simulate a real telemetry stream where different types of data are sent at random intervals */
 void Read_GNSS_Producer_Task(void* argument) 
@@ -85,18 +95,17 @@ void Read_Battery_Producer_Task(void* argument)
     We can implement another FIFO packet queue that continuously takes packets while 
     we are sending out with UART. 
  */
+
 void Transmit_Packets_Consumer(void* argument) 
 {
-  TelemetryPacket_t packet = {0};
+  TelemetryPacket_t packet;
   uint32_t tickDelay = pdMS_TO_TICKS(10);
-
   while (1) 
   {
+    /* Block until a packet is available from producer queue or tickDelay elapses*/
     if(xQueueReceive(Packet_Queue, &packet, tickDelay) == pdTRUE) 
     {
-      /* Received packet from the producer queue, now enqueue it to txBuffer*/
-      enqueue(&txBuffer, &packet);
-      StartUartTx();
+      UartTx_Enqueue(&packet);
     }
   }
 }

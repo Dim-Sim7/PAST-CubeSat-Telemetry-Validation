@@ -32,11 +32,11 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
     const PacketInfo_t* info = &PACKET_INFO[type];
 
     packet->sof = TELEMETRY_SOF;
-    packet->type = info->type;
+    packet->type = (uint8_t)type;
     taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
-    packet->reliable = info->reliable;
+    packet->reliable = (uint8_t)info->reliable;
     packet->len = info->len;
     packet->eof = TELEMETRY_EOF;
 
@@ -55,8 +55,8 @@ const PacketType_e PACKET_TYPES[] = {
 };
 /* Using designated initialiser to specify the enum as the index */
 const PacketInfo_t PACKET_INFO[] = {
-    [PACKET_TYPE_GNSS]    = { PACKET_TYPE_GNSS, sizeof(GNSSData_t), UNRELIABLE      },
-    [PACKET_TYPE_BARO]    = { PACKET_TYPE_BARO, sizeof(BarometerData_t), UNRELIABLE },
-    [PACKET_TYPE_IMU]     = { PACKET_TYPE_IMU, sizeof(IMUData_t), UNRELIABLE        },
-    [PACKET_TYPE_BATTERY] = { PACKET_TYPE_BATTERY, sizeof(BatteryData_t), RELIABLE  }
+    [PACKET_TYPE_GNSS]    = {sizeof(GNSSData_t), UNRELIABLE      },
+    [PACKET_TYPE_BARO]    = {sizeof(BarometerData_t), UNRELIABLE },
+    [PACKET_TYPE_IMU]     = {sizeof(IMUData_t), UNRELIABLE       },
+    [PACKET_TYPE_BATTERY] = {sizeof(BatteryData_t), RELIABLE     }
 };

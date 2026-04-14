@@ -32,9 +32,12 @@
 /* Memories definition */
 MEMORY
 {
-  RAM    (xrw)    : ORIGIN = 0x20000000,   LENGTH = 64K
-  SRAM2    (xrw)    : ORIGIN = 0x10000000,   LENGTH = 16K
-  FLASH    (rx)    : ORIGIN = 0x8000000,   LENGTH = 256K
+  RAM    (xrw) : ORIGIN = 0x20000000, LENGTH = 62K
+  TMR_A  (xrw) : ORIGIN = 0x2000F800, LENGTH = 512   /* TMR copy A — end of main RAM */
+  SRAM2  (xrw) : ORIGIN = 0x10000000, LENGTH = 15K
+  TMR_B  (xrw) : ORIGIN = 0x10003C00, LENGTH = 256   /* TMR copy B — end of SRAM2 */
+  TMR_C  (xrw) : ORIGIN = 0x10003D00, LENGTH = 256   /* TMR copy C — further in SRAM2 */
+  FLASH  (rx)  : ORIGIN = 0x8000000,  LENGTH = 256K
 }
 
 /* Entry Point */
@@ -199,6 +202,24 @@ SECTIONS
   PROVIDE( __bss_size = __bss_end - __bss_start );
   PROVIDE( __non_tls_bss_start = ADDR(.bss) );
 
+  /* TMR sections — physically separated for SEU protection
+    Copies A, B, C placed in different memory banks so a single
+    particle strike cannot corrupt more than one copy          */
+  .tmr_a (NOLOAD) : ALIGN(4)
+  {
+      *(.data.tmr_a)
+  } >TMR_A
+
+  .tmr_b (NOLOAD) : ALIGN(4)
+  {
+      *(.data.tmr_b)
+  } >TMR_B
+
+  .tmr_c (NOLOAD) : ALIGN(4)
+  {
+      *(.data.tmr_c)
+  } >TMR_C
+  
   _sisram2 = LOADADDR(.sram2);
 
   /* SRAM2 section

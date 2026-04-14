@@ -77,21 +77,20 @@ typedef struct __attribute__((__packed__))
 } RetransmitRequest;
 
 /* Helper enums and struct to construct packets */
-typedef enum {
-    RELIABLE,
-    UNRELIABLE
+typedef enum __attribute__((__packed__)) {
+    RELIABLE    = 0x00,
+    UNRELIABLE  = 0x01
 } Reliability_e;
 
-typedef enum {
-    PACKET_TYPE_GNSS,
-    PACKET_TYPE_BARO,
-    PACKET_TYPE_IMU,
-    PACKET_TYPE_BATTERY
+typedef enum __attribute__((__packed__)) {
+    PACKET_TYPE_GNSS       = 0x01,
+    PACKET_TYPE_BARO       = 0x02,
+    PACKET_TYPE_IMU        = 0x03,
+    PACKET_TYPE_BATTERY    = 0x04,
+    PACKET_TYPE_RETRANSMIT = 0x05,
 } PacketType_e;
 
-
 typedef struct {
-    PacketType_e type;
     uint8_t      len;
     Reliability_e reliable;
 } PacketInfo_t;

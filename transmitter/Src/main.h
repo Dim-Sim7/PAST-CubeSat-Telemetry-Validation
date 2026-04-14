@@ -16,21 +16,7 @@ extern "C" {
 
 
 void Error_Handler(void);
-// /* Global task handles */
-// extern TaskHandle_t Read_GNSS;
-// extern TaskHandle_t Read_BAROMETER;
-// extern TaskHandle_t Read_IMU;
-// extern TaskHandle_t Read_BATTERY;
-// extern TaskHandle_t Transmit_Packets;
-// extern TaskHandle_t Retransmit_Packets;
 
-// /* Global queues */
-// extern QueueHandle_t Packet_Queue;
-// extern QueueHandle_t Retransmit_Queue;
-
-// /* Packet counters */
-// extern volatile uint32_t cur_seq;
-// extern volatile uint32_t dropped_packets;
 
 /* Hardware pins */
 #define LED_Pin GPIO_PIN_3

@@ -58,24 +58,8 @@ void Error_Handler(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-TaskHandle_t Read_GNSS;
-TaskHandle_t Read_BAROMETER;
-TaskHandle_t Read_IMU;
-TaskHandle_t Read_BATTERY;
-TaskHandle_t Transmit_Packets;
-TaskHandle_t Retransmit_Packets;
-
-QueueHandle_t Packet_Queue;
-QueueHandle_t Retransmit_Queue;
-
-/* Master running counter for packets */
-volatile uint32_t cur_seq = 0;
-volatile uint32_t dropped_packets = 0;
 
 
-
-
-/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
@@ -97,8 +81,8 @@ int main(void)
     HAL_UART_Transmit(&huart2, (uint8_t*)"Queue was not created successfully", 34, HAL_MAX_DELAY);
   }
   
-  extern UBaseType_t ulNextRand;
-  ulNextRand = HAL_GetTick(); // varies based on boot time
+  // extern UBaseType_t ulNextRand;
+  // ulNextRand = HAL_GetTick(); // varies based on boot time
   /* Create tasks */
   CreateTasks();
   /* Start scheduler -- FreeRTOS takes over*/
@@ -118,36 +102,37 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
-  /** Configure the main internal regulator output voltage
-  */
   if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
   {
     Error_Handler();
   }
 
-  /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
-  RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+  RCC_OscInitStruct.OscillatorType      = RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.MSIState            = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
-  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.MSIClockRange       = RCC_MSIRANGE_6;  // 4MHz MSI — PLL input
+  /* Changed: PLL_NONE -> PLL_ON */
+  RCC_OscInitStruct.PLL.PLLState        = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource       = RCC_PLLSOURCE_MSI;
+  RCC_OscInitStruct.PLL.PLLM            = 1;
+  RCC_OscInitStruct.PLL.PLLN            = 40;
+  RCC_OscInitStruct.PLL.PLLR            = RCC_PLLR_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ            = RCC_PLLQ_DIV2;
+  RCC_OscInitStruct.PLL.PLLP            = RCC_PLLP_DIV7;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
     Error_Handler();
   }
 
-  /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+  RCC_ClkInitStruct.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+                                   | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+
+  RCC_ClkInitStruct.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider  = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_4) != HAL_OK)
   {
     Error_Handler();
   }

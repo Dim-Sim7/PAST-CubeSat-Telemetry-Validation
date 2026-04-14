@@ -3,12 +3,27 @@
 
 #include "stm32l4xx_hal.h"
 #include "ring_buffer.h"
+#include "history.h"
+#include "tmr.h"
 
+/* MUST be a power of 2 */
+#define TX_BUFFER_SIZE 64
+
+/* Triple Modualar Redundancy for uartTxBusy flag */
+#define SET_BUSY_TRUE(a, b, c) do { \
+    a = pdTRUE;                     \
+    b = pdTRUE;                     \
+    c = pdTRUE;                     \
+} while(0)
+
+#define SET_BUSY_FALSE(a, b, c) do { \
+    a = pdFALSE;                     \
+    b = pdFALSE;                     \
+    c = pdFALSE;                     \
+} while(0)
 extern UART_HandleTypeDef huart2;
-extern RingBuffer txBuffer;
-extern RingBuffer historyBuffer;
 
-void StartUartTx(void);
-uint8_t UartTxBusy(void);
+BaseType_t UartTx_Enqueue(TelemetryPacket_t *packet);
+
 
 #endif
