@@ -6,6 +6,10 @@
 #include "FreeRTOS.h"
 
 
+#define TMR_SECTION_A __attribute__((section(".tmr_a")))
+#define TMR_SECTION_B __attribute__((section(".tmr_b")))
+#define TMR_SECTION_C __attribute__((section(".tmr_c")))
+
 /* Voting algorithms for different types of data
     Uses bit-wise operations to return either 2 of 3 same values or 3 of 3 same values 
     AND  (1 AND 0) = 0, (1 AND 1) = 1

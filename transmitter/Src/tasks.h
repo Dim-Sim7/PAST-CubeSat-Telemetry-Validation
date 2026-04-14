@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "rand.h"
 #include "uart_comms.h"
+#include "tmr.h"
 
 #define TASK_STACK_SIZE 512
 #define MAX_QUEUE_SIZE 128 /* Producer packet queue size */

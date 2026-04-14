@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tasks.h"
+#include "uart_comms.h"
 
 
 /* Private includes ----------------------------------------------------------*/
@@ -78,13 +80,21 @@ int main(void)
 
   Packet_Queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(TelemetryPacket_t));
   if (Packet_Queue == NULL) {
-    HAL_UART_Transmit(&huart2, (uint8_t*)"Queue was not created successfully", 34, HAL_MAX_DELAY);
+    const char *msg = "Packet Queue was not created successfully";
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    while(1);
+  }
+
+  Retransmit_Queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(uint32_t));
+  if (Retransmit_Queue == NULL) {
+    const char *msg = "Retransmit Queue was not created successfully";
+    HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+    while(1);
   }
   
-  // extern UBaseType_t ulNextRand;
-  // ulNextRand = HAL_GetTick(); // varies based on boot time
   /* Create tasks */
   CreateTasks();
+  StartUartRx();
   /* Start scheduler -- FreeRTOS takes over*/
   vTaskStartScheduler();
 

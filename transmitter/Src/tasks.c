@@ -1,5 +1,8 @@
 #include "tasks.h"
+#include "history.h"
+#include "portmacro.h"
 #include "ring_buffer.h"
+#include "telemetry.h"
 #include "uart_comms.h"
 
 /* definitions */
@@ -110,7 +113,7 @@ void Transmit_Packets_Consumer(void* argument)
   }
 }
 
-void TelemetryMonitorTask(void* argument)
+void Telemetry_Monitor_Task(void* argument)
 {
   uint32_t last_seq = 0;
   uint32_t last_dropped = 0;
@@ -132,9 +135,30 @@ void TelemetryMonitorTask(void* argument)
   }
 }
 
+void Retransmit_Task(void* argument)
+{
+  uint32_t seq;
+  RingBufferEntry historyEntry;
+  TelemetryPacket_t pkt;
+  while(1)
+  {
+    if (xQueueReceive(Retransmit_Queue, &seq, portMAX_DELAY) == pdTRUE)
+    {
+      /* Search history buffer for this seq number */
+      /* Re enqueue into txBuffer for retransmit */
+      if(getFromHistory(seq, &historyEntry) == HISTORY_FOUND)
+      {
+        /* Packet found -> Retransmit */
+        memcpy(&pkt, historyEntry.data, sizeof(pkt));
+        UartTx_Enqueue(&pkt);
+      }
+    }
+  }
+}
+
 void CreateTasks(void)
 {
-    xTaskCreate(TelemetryMonitorTask, "TelemetryMonitor", TASK_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Telemetry_Monitor_Task, "TelemetryMonitor", TASK_STACK_SIZE, NULL, 1, NULL);
     /* Producer tasks */
     xTaskCreate(Read_GNSS_Producer_Task, "Read_GNSS", TASK_STACK_SIZE, NULL, 2, &Read_GNSS);
     xTaskCreate(Read_Barometer_Producer_Task, "Read_Barometer", TASK_STACK_SIZE, NULL, 2, &Read_BAROMETER);
@@ -143,4 +167,7 @@ void CreateTasks(void)
 
     /* Consumer tasks */
     xTaskCreate(Transmit_Packets_Consumer, "Transmit packets", TASK_STACK_SIZE, NULL, 3, &Transmit_Packets);
+
+    /* Retransmit task */
+    xTaskCreate(Retransmit_Task, "Retransmit_Task", TASK_STACK_SIZE, NULL, 3, &Retransmit_Packets);
 }

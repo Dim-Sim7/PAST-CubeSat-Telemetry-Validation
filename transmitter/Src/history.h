@@ -7,6 +7,8 @@
    MUST be a power of 2 */
 #define HISTORY_BUFFER_SIZE 128
 
+#define HISTORY_FOUND 1
+#define HISTORY_NOT_FOUND 0
 void addHistory(TelemetryPacket_t* packet);
 void addHistoryRaw(RingBufferEntry* entry);
 int getFromHistory(uint32_t seq, RingBufferEntry* out);

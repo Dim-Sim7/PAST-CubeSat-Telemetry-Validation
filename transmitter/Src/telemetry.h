@@ -19,13 +19,30 @@
 
 #define POLY 0x1021 /* for crc-ccitt mask */
 
+typedef uint8_t Reliability_e;
+typedef uint8_t PacketType_e;
+
+#define RELIABLE    0x00
+#define UNRELIABLE  0x01
+
+#define PACKET_TYPE_GNSS       0x01
+#define PACKET_TYPE_BARO       0x02
+#define PACKET_TYPE_IMU        0x03
+#define PACKET_TYPE_BATTERY    0x04
+#define PACKET_TYPE_RETRANSMIT 0x05
+
 /* I used a fixed buffer for the payload as it is simple and predictable
 When I send the packet I only send the used portion*/
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
     uint8_t sof;
     uint8_t type;
-    uint32_t seq;
+
+    uint32_t seq; /* Packet sequence ID */
+
+    uint16_t frag_index; /* 0, 1, 2... */
+    uint16_t frag_total; /* total number of fragments */
+    
     uint8_t reliable;
     uint8_t len;
     uint8_t payload[MAX_PAYLOAD_SIZE];
@@ -33,9 +50,16 @@ typedef struct __attribute__((__packed__))
     uint8_t eof;
 } TelemetryPacket_t;
 
+typedef struct
+{
+    uint16_t frag_idx;
+    uint16_t frag_total;
+    uint16_t len;
+} FragmentMeta_t;
+
 #define MAX_PACKET_SIZE sizeof(TelemetryPacket_t)
 
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
     float time;
     double latitude;
@@ -43,13 +67,13 @@ typedef struct __attribute__((__packed__))
     float altitude;
 } GNSSData_t;
 
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
     uint32_t pressure;
     int16_t temperature;
 } BarometerData_t;
 
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
     int16_t accelX;
     int16_t accelY;
@@ -62,33 +86,20 @@ typedef struct __attribute__((__packed__))
     int16_t magZ;
 } IMUData_t;
 
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
-    uint8_t hours, minutes;
+    uint8_t hours;
+    uint8_t minutes;
     uint8_t percent;
     char status[8];
 } BatteryData_t;
 
-typedef struct __attribute__((__packed__))
+typedef struct __packed
 {
     uint8_t type;
     uint32_t from_seq;
     uint32_t to_seq;
 } RetransmitRequest;
-
-/* Helper enums and struct to construct packets */
-typedef enum __attribute__((__packed__)) {
-    RELIABLE    = 0x00,
-    UNRELIABLE  = 0x01
-} Reliability_e;
-
-typedef enum __attribute__((__packed__)) {
-    PACKET_TYPE_GNSS       = 0x01,
-    PACKET_TYPE_BARO       = 0x02,
-    PACKET_TYPE_IMU        = 0x03,
-    PACKET_TYPE_BATTERY    = 0x04,
-    PACKET_TYPE_RETRANSMIT = 0x05,
-} PacketType_e;
 
 typedef struct {
     uint8_t      len;
@@ -99,6 +110,8 @@ extern const PacketInfo_t PACKET_INFO[];
 extern const PacketType_e PACKET_TYPES[];
 
 uint16_t calculateCrc(const uint8_t* data, uint8_t len);
+uint8_t validateCrc(uint16_t* packet_crc, const uint8_t* data, int8_t len);
 void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, volatile uint32_t* cur_seq);
-
+void createFragmentPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, 
+                volatile uint32_t* cur_seq, FragmentMeta_t fragMeta, Reliability_e reliable);
 #endif

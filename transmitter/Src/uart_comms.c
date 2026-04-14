@@ -1,23 +1,17 @@
 #include "uart_comms.h"
-#include "history.h"
-#include "portmacro.h"
-#include "projdefs.h"
-#include "stm32l432xx.h"
-#include "telemetry.h"
-
-
+#include "tmr.h"
 
 /* This is a single packet buffer for the HAL_UART_TRANSMIT_DMA process. 
   static ensures this is not overwritten until after the packet is transmitted */
 static RingBufferEntry txScratch;
 
 /* Volatile ensures this isn't cached and accessed directly each time it is used */
-static volatile BaseType_t uartTxBusyA = pdFALSE;
-static volatile BaseType_t uartTxBusyB = pdFALSE;
-static volatile BaseType_t uartTxBusyC = pdFALSE;
+TMR_SECTION_A static volatile BaseType_t uartTxBusyA = pdFALSE;
+TMR_SECTION_B static volatile BaseType_t uartTxBusyB = pdFALSE;
+TMR_SECTION_C static volatile BaseType_t uartTxBusyC = pdFALSE;
 
 static RingBufferEntry txEntries[TX_BUFFER_SIZE];
-static RingBuffer txBuffer = {
+TMR_SECTION_A static RingBuffer txBuffer = {
     .entries = txEntries,
     .head_a  = 0, .head_b = 0, .head_c = 0,
     .tail_a  = 0, .tail_b = 0, .tail_c = 0,
@@ -82,8 +76,8 @@ BaseType_t UartTx_Enqueue(TelemetryPacket_t *packet)
    will see uartTxBusy = pdTRUE and not attempt to also call StartUartTx() */
     SET_BUSY_TRUE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
 
-    /* Exit critical section before calling StartUartTx() as the transmit can be slow and must
-    not run wih interrupts masked. uarTxBusy = pdTRUE ensure the ISR will not interfere if it fires during the DMA setup*/
+    /* Exit critical section before calling StartUartTx() as the transmit can be slow
+    uarTxBusy = pdTRUE ensure the ISR will not interfere if it fires during the DMA setup*/
     taskEXIT_CRITICAL();
     if (StartUartTx() != pdTRUE) /* Attempt to send packet */
     {
@@ -135,6 +129,40 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
       /* Buffer is empty / has been drained. Mark UART as idle. The consumer
         task will set uartTxBusy = pdTRUE and call StartUartTx() when the next packet arrives. */
       SET_BUSY_FALSE(uartTxBusyA, uartTxBusyA, uartTxBusyA);
+    }
+  }
+}
+
+/* Holds the received nack packet */
+static NACKPacket_t rxNack;
+
+/* Receiver */
+void StartUartRx(void)
+{
+  /* Start receiving exactly sizeof(NACKPacket_t) into rxNack*/
+  HAL_UART_Receive_DMA(&huart2, (uint8_t*)&rxNack, sizeof(NACKPacket_t));
+}
+
+/* https://forums.freertos.org/t/portyield-from-isr-question/7162 resource on portYIELD_FROM_ISR*/
+/* Executes when a nack packet is received fully from StartUartRx */
+/* rxNack -> validate -> find entry in history -> store in queue -> retransmit task consumes */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef * huart)
+{
+  if (huart->Instance == USART2)
+  {
+    /* Copy data from rxNack */
+    uint32_t seq = rxNack.seq;
+    uint16_t nackCrc = rxNack.crc;
+    uint8_t valid = validateCrc(&nackCrc, (uint8_t*)&rxNack, offsetof(NACKPacket_t, crc));
+    /* Restart Rx */
+    StartUartRx();
+
+    if (valid)
+    {
+      BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+      xQueueSendFromISR(Retransmit_Queue, &seq, &xHigherPriorityTaskWoken);
+      /* Preps the scheduler to resume running the high priority task once the ISR finishes*/
+      portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
   }
 }

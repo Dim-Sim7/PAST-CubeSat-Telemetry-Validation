@@ -26,17 +26,26 @@ uint16_t calculateCrc(const uint8_t* data, uint8_t len)
     return crc;
 }
 
+uint8_t validateCrc(uint16_t* packet_crc, const uint8_t* data, int8_t len)
+{
+    uint16_t expectedCrc = calculateCrc(data, len);
+
+    return (*packet_crc == expectedCrc) ? 1 : 0;
+}
+
 /* Protocol byte order: little-endian */ 
 void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, volatile uint32_t* cur_seq) 
 {
     const PacketInfo_t* info = &PACKET_INFO[type];
 
     packet->sof = TELEMETRY_SOF;
-    packet->type = (uint8_t)type;
+    packet->type = type;
     taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
-    packet->reliable = (uint8_t)info->reliable;
+    packet->frag_index = 0;
+    packet->frag_total = 0;
+    packet->reliable = info->reliable;
     packet->len = info->len;
     packet->eof = TELEMETRY_EOF;
 
@@ -45,6 +54,29 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
     packet->crc = calculateCrc((const uint8_t*)packet, 
                     offsetof(TelemetryPacket_t, crc)); //stop right before crc field in struct
 }
+
+void createFragmentPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type, 
+                volatile uint32_t* cur_seq, FragmentMeta_t fragMeta, Reliability_e reliable) 
+{
+
+    packet->sof = TELEMETRY_SOF;
+    packet->type = type;
+    taskENTER_CRITICAL();
+    packet->seq = (*cur_seq)++;
+    taskEXIT_CRITICAL();
+    packet->frag_index = fragMeta.frag_idx;
+    packet->frag_total = fragMeta.frag_total;
+    packet->reliable = reliable;
+    packet->len = fragMeta.len;
+    packet->eof = TELEMETRY_EOF;
+
+    memcpy(packet->payload, data, packet->len);
+
+    packet->crc = calculateCrc((const uint8_t*)packet, 
+                    offsetof(TelemetryPacket_t, crc)); //stop right before crc field in struct
+}
+
+
 
 /* Used to cycle between types and read data */
 const PacketType_e PACKET_TYPES[] = {

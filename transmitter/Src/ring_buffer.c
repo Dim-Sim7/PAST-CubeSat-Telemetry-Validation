@@ -36,7 +36,7 @@ int dequeue(RingBuffer* buffer, RingBufferEntry* out)
     return 0;
 }
 
-void enqueue(RingBuffer* buffer, TelemetryPacket_t* packet) 
+void enqueue(RingBuffer* buffer, const TelemetryPacket_t* packet) 
 {
     if (RingBuffer_Full(buffer)) { RB_SET_TAIL(buffer, RB_TAIL(buffer) + 1); } // drop oldest packet in buffer
     uint16_t idx = RB_HEAD(buffer) & buffer->mask;
