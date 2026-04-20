@@ -15,8 +15,8 @@
 #include "telemetry.h"
 
 /* MUST be a power of 2 */
-#define TX_BUFFER_SIZE 64
-#define RX_BUFFER_SIZE 32
+#define TX_BUFFER_SIZE 128
+#define RX_BUFFER_SIZE 64
 
 /* Triple Modualar Redundancy for uartTxBusy flag */
 #define SET_BUSY_TRUE(a, b, c) do { \

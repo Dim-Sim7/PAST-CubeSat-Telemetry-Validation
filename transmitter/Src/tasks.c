@@ -1,9 +1,5 @@
 #include "tasks.h"
-#include "history.h"
-#include "portmacro.h"
-#include "ring_buffer.h"
-#include "telemetry.h"
-#include "uart_comms.h"
+
 
 /* definitions */
 TaskHandle_t Read_GNSS;
@@ -12,6 +8,7 @@ TaskHandle_t Read_IMU;
 TaskHandle_t Read_BATTERY;
 TaskHandle_t Transmit_Packets;
 TaskHandle_t Retransmit_Packets;
+TaskHandle_t Read_IMAGE_DATA;
 
 QueueHandle_t Packet_Queue;
 QueueHandle_t Retransmit_Queue;
@@ -31,7 +28,7 @@ void Read_GNSS_Producer_Task(void* argument)
     readEmbeddedData(Packet_Queue, &cur_seq, &gnss_idx, PACKET_TYPE_GNSS, (const void*)gnssData, 
     DATA_COUNT, sizeof(gnssData[0]), &dropped_packets);
 
-    watermark = uxTaskGetStackHighWaterMark(NULL);
+    watermark = uxTaskGetStackHighWaterMark(Read_GNSS);
     printf("GNSS Task HWM: %lu words\r\n", (unsigned long)watermark);
 
     xApplicationGetRandomNumber(&r);
@@ -49,7 +46,7 @@ void Read_Barometer_Producer_Task(void* argument)
     readEmbeddedData(Packet_Queue, &cur_seq, &baro_idx, PACKET_TYPE_BARO, (const void*)baroData, 
     DATA_COUNT, sizeof(baroData[0]), &dropped_packets);
 
-    watermark = uxTaskGetStackHighWaterMark(NULL);
+    watermark = uxTaskGetStackHighWaterMark(Read_BAROMETER);
     printf("Barometer Task HWM: %lu words\r\n", (unsigned long)watermark);
     
     xApplicationGetRandomNumber(&r);
@@ -67,7 +64,7 @@ void Read_IMU_Producer_Task(void* argument)
     readEmbeddedData(Packet_Queue, &cur_seq, &imu_idx, PACKET_TYPE_IMU, (const void*)imuData, 
     DATA_COUNT, sizeof(imuData[0]), &dropped_packets);
 
-    watermark = uxTaskGetStackHighWaterMark(NULL);
+    watermark = uxTaskGetStackHighWaterMark(Read_IMU);
     printf("IMU Task HWM: %lu words\r\n", (unsigned long)watermark);
 
     xApplicationGetRandomNumber(&r);
@@ -85,12 +82,29 @@ void Read_Battery_Producer_Task(void* argument)
     readEmbeddedData(Packet_Queue, &cur_seq, &battery_idx, PACKET_TYPE_BATTERY, (const void*)batteryData, 
     DATA_COUNT, sizeof(batteryData[0]), &dropped_packets);
 
-    watermark = uxTaskGetStackHighWaterMark(NULL);
+    watermark = uxTaskGetStackHighWaterMark(Read_BATTERY);
     printf("Battery Task HWM: %lu words\r\n", (unsigned long)watermark);
 
     xApplicationGetRandomNumber(&r);
     vTaskDelay(pdMS_TO_TICKS(5 + (r % 30)));
   }
+}
+
+void Read_Image_Data_Task(void* argument)
+{
+  UBaseType_t watermark;
+  
+  while(1)
+  {
+    size_t img_size = 0;
+    const uint8_t* data = getCameraFrame(&img_size);
+    processFragmentData(Packet_Queue, &cur_seq, PACKET_TYPE_IMAGE, (const void*)(data), img_size, &dropped_packets, RELIABLE);
+    watermark = uxTaskGetStackHighWaterMark(Read_IMAGE_DATA);
+    printf("Read Image Data Task HWM: %lu words\r\n", (unsigned long)watermark);
+
+    vTaskDelay(pdMS_TO_TICKS(10000));
+  }  
+  
 }
 
 /* Consumer task. Takes from the packet queue and transmits over UART 
@@ -158,16 +172,16 @@ void Retransmit_Task(void* argument)
 
 void CreateTasks(void)
 {
-    xTaskCreate(Telemetry_Monitor_Task, "TelemetryMonitor", TASK_STACK_SIZE, NULL, 1, NULL);
+    xTaskCreate(Telemetry_Monitor_Task, "TelemetryMonitor", SENSOR_TASK_STACK_SIZE, NULL, 1, NULL);
     /* Producer tasks */
-    xTaskCreate(Read_GNSS_Producer_Task, "Read_GNSS", TASK_STACK_SIZE, NULL, 2, &Read_GNSS);
-    xTaskCreate(Read_Barometer_Producer_Task, "Read_Barometer", TASK_STACK_SIZE, NULL, 2, &Read_BAROMETER);
-    xTaskCreate(Read_IMU_Producer_Task, "Read_IMU", TASK_STACK_SIZE, NULL, 2, &Read_IMU);
-    xTaskCreate(Read_Battery_Producer_Task, "Read_Battery", TASK_STACK_SIZE, NULL, 2, &Read_BATTERY);
-
+    xTaskCreate(Read_GNSS_Producer_Task, "Read_GNSS", SENSOR_TASK_STACK_SIZE, NULL, 2, &Read_GNSS);
+    xTaskCreate(Read_Barometer_Producer_Task, "Read_Barometer", SENSOR_TASK_STACK_SIZE, NULL, 2, &Read_BAROMETER);
+    xTaskCreate(Read_IMU_Producer_Task, "Read_IMU", SENSOR_TASK_STACK_SIZE, NULL, 2, &Read_IMU);
+    xTaskCreate(Read_Battery_Producer_Task, "Read_Battery", SENSOR_TASK_STACK_SIZE, NULL, 2, &Read_BATTERY);
+    xTaskCreate(Read_Image_Data_Task, "Read_Image_Data", TASK_STACK_SIZE, NULL, 2, &Read_IMAGE_DATA);
     /* Consumer tasks */
     xTaskCreate(Transmit_Packets_Consumer, "Transmit packets", TASK_STACK_SIZE, NULL, 3, &Transmit_Packets);
 
     /* Retransmit task */
-    xTaskCreate(Retransmit_Task, "Retransmit_Task", TASK_STACK_SIZE, NULL, 3, &Retransmit_Packets);
+    xTaskCreate(Retransmit_Task, "Retransmit_Task", SENSOR_TASK_STACK_SIZE, NULL, 3, &Retransmit_Packets);
 }

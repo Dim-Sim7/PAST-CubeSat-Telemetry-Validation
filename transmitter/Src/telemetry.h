@@ -29,7 +29,8 @@ typedef uint8_t PacketType_e;
 #define PACKET_TYPE_BARO       0x02
 #define PACKET_TYPE_IMU        0x03
 #define PACKET_TYPE_BATTERY    0x04
-#define PACKET_TYPE_RETRANSMIT 0x05
+#define PACKET_TYPE_IMAGE      0x05
+#define PACKET_TYPE_RETRANSMIT 0x06
 
 /* I used a fixed buffer for the payload as it is simple and predictable
 When I send the packet I only send the used portion*/
@@ -40,7 +41,8 @@ typedef struct __packed
 
     uint32_t seq; /* Packet sequence ID */
 
-    uint16_t frag_index; /* 0, 1, 2... */
+    uint16_t block_id; /* identifier within a block -> see processLargePayloadData()*/
+    uint8_t frag_index; /* 0, 1, 2... */
     uint16_t frag_total; /* total number of fragments */
     
     uint8_t reliable;
@@ -52,6 +54,7 @@ typedef struct __packed
 
 typedef struct
 {
+    uint16_t block_id;
     uint16_t frag_idx;
     uint16_t frag_total;
     uint16_t len;

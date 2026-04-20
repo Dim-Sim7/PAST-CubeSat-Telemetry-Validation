@@ -13,8 +13,10 @@
 #include "rand.h"
 #include "uart_comms.h"
 #include "tmr.h"
+#include "image.h"
 
 #define TASK_STACK_SIZE 512
+#define SENSOR_TASK_STACK_SIZE 512
 #define MAX_QUEUE_SIZE 128 /* Producer packet queue size */
 
 extern TaskHandle_t Read_GNSS;

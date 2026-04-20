@@ -43,8 +43,11 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
     taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
+    /* This is an isolated packet, not part of a larger group */
+    packet->block_id = 0;
     packet->frag_index = 0;
     packet->frag_total = 0;
+
     packet->reliable = info->reliable;
     packet->len = info->len;
     packet->eof = TELEMETRY_EOF;
@@ -64,6 +67,7 @@ void createFragmentPacket(TelemetryPacket_t* packet, const void* data, PacketTyp
     taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
+    packet->block_id = fragMeta.block_id;
     packet->frag_index = fragMeta.frag_idx;
     packet->frag_total = fragMeta.frag_total;
     packet->reliable = reliable;
@@ -75,8 +79,6 @@ void createFragmentPacket(TelemetryPacket_t* packet, const void* data, PacketTyp
     packet->crc = calculateCrc((const uint8_t*)packet, 
                     offsetof(TelemetryPacket_t, crc)); //stop right before crc field in struct
 }
-
-
 
 /* Used to cycle between types and read data */
 const PacketType_e PACKET_TYPES[] = {

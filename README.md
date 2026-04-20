@@ -2,12 +2,9 @@ cmake -B build/Debug
 cmake --build build/Debug --clean-first
 
 
-TO DO
-
-
-
-Implement forward error correction
-
-After these, the transmitter is finished. Can maybe add some debugging tools
-
-Start on python receiver
+Need to implement ways of simulating faulty data:
+    packet data corruption mid-transmission
+    dropped packets
+    packets arriving out of sync
+    unexpected end of transmission from the transmitter
+    ghost packets
