@@ -4,8 +4,6 @@
 #include "telemetry.h"
 
 
-/* Reading pre-structured data define in telemetry.h that is under MAX_PACKET_SIZE length */
-/* Since payload is small, I only want to use CRC for error detection and use NACKs to request retransmits of lost packets */
 void readEmbeddedData(QueueHandle_t queue, volatile uint32_t* cur_seq, size_t* idx, 
                             PacketType_e type, const void* embeddedData, 
                             size_t dataCount, size_t dataSize, volatile uint32_t* dropped_packets) 
