@@ -56,3 +56,6 @@ dkms.conf
 
 receiver/venv/
 transmitter/Middlewares/FreeRTOS.zip
+
+__pycache__/
+*.pyc
