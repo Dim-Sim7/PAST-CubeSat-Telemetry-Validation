@@ -8,8 +8,7 @@ from receiver.telemetry_packet import TelemetryPacket
 from receiver.telemetry_receiver import TelemetryReceiver
 import config
 
-class RSGroup:
-    pass
+
 
 
 # here I can look at the type of data the packet is, extract the data and then store it in the appropriate file

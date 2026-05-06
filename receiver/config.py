@@ -71,6 +71,7 @@ class PacketType(IntEnum):
     
 RS_DATA_SHARDS   = 4
 RS_PARITY_SHARDS = 2
+RS_SHARD_SIZE = 32
 
 # Struct layout 
 # https://www.digitalocean.com/community/tutorials/python-struct-pack-unpack

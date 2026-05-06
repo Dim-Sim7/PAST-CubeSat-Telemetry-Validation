@@ -31,6 +31,7 @@ typedef uint8_t PacketType_e;
 #define PACKET_TYPE_BATTERY    0x04
 #define PACKET_TYPE_IMAGE      0x05
 #define PACKET_TYPE_RETRANSMIT 0x06
+#define PACKET_TYPE_RS_META    0x07
 
 /* I used a fixed buffer for the payload as it is simple and predictable
 When I send the packet I only send the used portion*/

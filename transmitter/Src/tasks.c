@@ -1,4 +1,6 @@
 #include "tasks.h"
+#include "projdefs.h"
+#include "telemetry.h"
 
 
 /* definitions */
@@ -93,11 +95,18 @@ void Read_Battery_Producer_Task(void* argument)
 void Read_Image_Data_Task(void* argument)
 {
   UBaseType_t watermark;
-  
+  TelemetryPacket_t rs_meta_packet = {0};
   while(1)
   {
-    size_t img_size = 0;
+    uint32_t img_size = 0;
     const uint8_t* data = getCameraFrame(&img_size);
+    if (data == NULL || img_size == 0) {
+      vTaskDelay(pdMS_TO_TICKS(10000));
+      continue;
+    }
+    /* need to send the size of the image before the image data itself to create the RS Group in the receiver end */
+    createPacket(&rs_meta_packet, &img_size, PACKET_TYPE_RS_META, &cur_seq);
+    xQueueSend(Packet_Queue, &rs_meta_packet, pdMS_TO_TICKS(10));
     processFragmentData(Packet_Queue, &cur_seq, PACKET_TYPE_IMAGE, (const void*)(data), img_size, &dropped_packets, RELIABLE);
     watermark = uxTaskGetStackHighWaterMark(Read_IMAGE_DATA);
     printf("Read Image Data Task HWM: %lu words\r\n", (unsigned long)watermark);
@@ -107,11 +116,6 @@ void Read_Image_Data_Task(void* argument)
   
 }
 
-/* Consumer task. Takes from the packet queue and transmits over UART 
-    Need to be cautious of overflow as we have multiple producers filling up the queue
-    We can implement another FIFO packet queue that continuously takes packets while 
-    we are sending out with UART. 
- */
 
 void Transmit_Packets_Consumer(void* argument) 
 {

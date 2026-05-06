@@ -38,7 +38,7 @@ void readEmbeddedData(QueueHandle_t queue, volatile uint32_t* cur_seq, size_t* i
         D0[32], D1[32], D2[32], D3[32], P0[32], P1[32],   // shard_block 1
         D0[32], D1[32], D2[32], D3[32], P0[32], P1[32],   // shard_block 2
         ...
-        ] <- image stored as a sequence of shards, each shard has 4 x 32 byte data and 2 x 32 byte parity data
+        ] <- image stored as a sequence of shard blocks, each shard has 4 x 32 byte data and 2 x 32 byte parity data
 
         block_size = MAX_PAYLOAD_SIZE = 32 bytes
         data_shards = 4, parity_shards = 2
@@ -100,7 +100,8 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
             size_t offset = base_offset + (i * BLOCK_SIZE);
             size_t remaining = (offset < dataSize) ? (dataSize - offset) : 0;
 
-            size_t copy_size = (remaining > BLOCK_SIZE) ? BLOCK_SIZE : remaining;
+            size_t capacity   = BLOCK_SIZE;
+            size_t copy_size  = (remaining > capacity) ? capacity : remaining;
 
             if (remaining > 0)
             {
