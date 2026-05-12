@@ -120,7 +120,7 @@ class RSGroup:
             self._decoded_blocks[block_id] = data
             log.info(
                 f"RSGroup seq={self.session_seq} "
-                f"block={block_id} decoded: {len(data)} bytes  "
+                f"block={block_id} decoded: {len(data)} bytes "
                 f"({len(self._decoded_blocks)}/{self.nr_blocks} blocks done)"
             )
         except ValueError as e:

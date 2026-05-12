@@ -33,11 +33,11 @@ class TelemetryPacket:
         return self.frag_total > 0
     
     @property
-    def packet_type(self) -> config.PacketType:
+    def packet_type(self):
         try:
-            return config.PacketType(self.type)
+            return self.type
         except ValueError:
-            return config.PacketType.UNKNOWN
+            return None
 
  
     def is_valid(self) -> bool:
@@ -48,7 +48,7 @@ class TelemetryPacket:
         crc_str = "OK" if self.crc_ok else \
                   f"FAIL(rx={self.crc_rx:#06x} calc={self.crc_calc:#06x})"
         return (
-            f"Pkt[{path} type={self.packet_type.name} seq={self.seq} "
+            f"Pkt[{path} type={self.type} seq={self.seq} "
             f"block={self.block_id} frag={self.frag_index}/{self.frag_total} "
             f"reliable={self.reliable} len={self.len} CRC={crc_str} "
             f"framing={'OK' if self.framing_ok else 'FAIL'}]"

@@ -1,11 +1,10 @@
 # https://docs.python.org/3/library/ctypes.html
 # https://realpython.com/python-bindings-overview/#ctypes
 
-from ctypes import *
 import ctypes
 so_file = "receiver/librs.so"
 
-rs_functions = CDLL(so_file)
+rs_functions = ctypes.CDLL(so_file)
 
 rs_functions.fec_init.restype = None
 rs_functions.fec_init.argtypes = []
@@ -103,10 +102,18 @@ class ReedSolomon:
         
         # Mutable C buffers for all data shards
         # reed_solomon_decode writes recovered data back through these
-        c_data_bufs = [(ctypes.c_char * size)(*shards[i]) for i in range(ds)]
-        data_ptrs   = (ctypes.c_void_p * ds)(
-            *[ctypes.addressof(b) for b in c_data_bufs]
-        )
+        c_data_bufs = []
+
+        for i in range(ds):
+            buf = (ctypes.c_char * size)(*shards[i])
+            c_data_bufs.append(buf)
+            
+        data_addresses = [
+            ctypes.addressof(buf)
+            for buf in c_data_bufs
+        ]
+        
+        data_ptrs = (ctypes.c_void_p * ds)(*data_addresses)
 
         # Parity shard buffers — one per erasure
         fec_indices = p_avail[:nr]

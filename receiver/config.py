@@ -68,17 +68,9 @@ PACKET_TYPE_BATTERY    =0x04
 PACKET_TYPE_IMAGE      =0x05
 PACKET_TYPE_RETRANSMIT =0x06
 PACKET_TYPE_RS_META    =0x07
-
-
-class PacketType(IntEnum):
-    GNSS       = 0x01
-    BARO       = 0x02
-    IMU        = 0x03
-    BATTERY    = 0x04
-    IMAGE      = 0x05
-    RETRANSMIT = 0x06
-    UNKNOWN    = 0xFF
     
+# 1 BLOCK = [D | D | D | D | P | P]
+# 1 SHARD [D] = 32 BYTES
 RS_DATA_SHARDS   = 4
 RS_PARITY_SHARDS = 2
 RS_SHARD_SIZE = 32
