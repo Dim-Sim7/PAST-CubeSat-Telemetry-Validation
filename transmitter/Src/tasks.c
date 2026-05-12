@@ -98,7 +98,7 @@ void Read_Image_Data_Task(void* argument)
   TelemetryPacket_t rs_meta_packet = {0};
   while(1)
   {
-    uint32_t img_size = 0;
+    size_t img_size = 0;
     const uint8_t* data = getCameraFrame(&img_size);
     if (data == NULL || img_size == 0) {
       vTaskDelay(pdMS_TO_TICKS(10000));

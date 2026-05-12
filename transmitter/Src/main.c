@@ -82,14 +82,20 @@ int main(void)
   if (Packet_Queue == NULL) {
     const char *msg = "Packet Queue was not created successfully";
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    while(1);
+    while (1) {
+      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+      HAL_Delay(200);
+    }
   }
 
   Retransmit_Queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(uint32_t));
   if (Retransmit_Queue == NULL) {
     const char *msg = "Retransmit Queue was not created successfully";
     HAL_UART_Transmit(&huart2, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    while(1);
+    while (1) {
+      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_4);
+      HAL_Delay(200);
+    }
   }
   
   /* Create tasks */
@@ -97,7 +103,7 @@ int main(void)
   StartUartRx();
   /* Start scheduler -- FreeRTOS takes over*/
   vTaskStartScheduler();
-
+  Error_Handler();
   while (1)
   {
   }
@@ -196,17 +202,22 @@ static void MX_GPIO_Init(void)
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : LED_Pin */
-  GPIO_InitStruct.Pin = LED_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  /*Configure GPIO pin : PA2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF3_USART2;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
