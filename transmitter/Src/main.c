@@ -77,7 +77,7 @@ int main(void)
 
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-
+  fec_init();
   Packet_Queue = xQueueCreate(MAX_QUEUE_SIZE, sizeof(TelemetryPacket_t));
   if (Packet_Queue == NULL) {
     const char *msg = "Packet Queue was not created successfully";

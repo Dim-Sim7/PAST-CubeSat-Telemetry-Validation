@@ -13,12 +13,12 @@ import struct
 import time
 from typing import Callable, Optional
 
-from pyparsing import Dict
+from typing import Dict
 import serial
-
+from rs_group import *
 from receiver import config
 from receiver.telemetry_packet import TelemetryPacket
-
+from rs_c_wrapper import *
 # Error Logging 
 # https://docs.python.org/3/library/logging.html
 # https://dev.to/koladev/error-handling-and-logging-in-python-mi1
@@ -39,22 +39,29 @@ class TelemetryReceiver:
         self._ser         = None
         self._buf         = bytearray()
 
-        #need to import this code
-        self._rs = ReedSolomonNew(rs_data_shards, rs_parity_shards)
+        self._rs = rs_functions.reed_solomon_new(rs_data_shards, rs_parity_shards)
         self._rs_data_shards   = rs_data_shards
         self._rs_parity_shards = rs_parity_shards
         
-        self._rs_groups: Dict[int, ParseReedSolomon] = {}
+        # Active RSGroups keyed by pkt.type
+        self._rs_groups: Dict[int, RSGroup] = {}
         
+        # Pending meta packets keyed by their seq number
+        self._pending_meta: Dict[int, TransmissionMeta] = {}
+        
+        # Shards that arrived before their RSGroup was created, can happen if out of order
+        # keyed by pkt.type, capped at MAX_PRE_SESSION_SHARDS per type
+        self._pre_session_shards: Dict[int, List[TelemetryPacket]] = {}
+
         self._packet_cb: Optional[Callable[[TelemetryPacket], None]] = None
-        self._block_complete_cb: Optional[Callable[[int, bytes], None]] = None
+        self._block_complete_cb: Optional[Callable[[int, int, bytes], None]] = None
 
     # register handler for crc only packets
     def on_packet(self, cb: Callable[[TelemetryPacket], None]):
         self._packet_cb = cb
  
     # register handler for RS decoded blocks
-    def on_block_complete(self, cb: Callable[[int, bytes], None]):
+    def on_block_complete(self, cb: Callable[[int, int, bytes], None]):
         self._block_complete_cb = cb
 
     def connect(self):
@@ -133,18 +140,90 @@ class TelemetryReceiver:
                 self._handle_rs_shard(pkt)
                 
     def _handle_single(self, pkt: TelemetryPacket):
-        log.info("f:Single: {pkt}")
+        log.info(f":Single: {pkt}")
+        if pkt.type == config.PACKET_TYPE_RS_META:
+            try:
+                meta = TransmissionMeta.from_packet(pkt)
+                self._pending_meta[pkt.seq] = meta
+                log.info(f"RS meta stored: seq={pkt.seq} {meta}")
+            except ValueError as e:
+                log.error(f"Failed to parse RS meta: {e}")
+            return
+
         if self._packet_cb:
             try:
                 self._packet_cb(pkt)
             except Exception as e:
-                log.error(f"on_packet callback raised:{e}")
+                log.error(f"on_packet callback raised: {e}")
     
     def _handle_rs_shard(self, pkt: TelemetryPacket):
-        block_id = pkt.block_id
+        ptype = pkt.type
         
-        if block_id not in self._rs_groups:
-            self._rs_groups[block_id] = RSGroup
+        # First shard of first block
+        if pkt.block_id == 0 and pkt.frag_index == 0:
+            meta = self._pop_latest_meta(pkt.seq)
+            
+            if meta is None:
+                log.warning(
+                    f"No RS meta for type={ptype:#04x} seq={pkt.seq}, "
+                    f"buffering shard"
+                )
+                self._buffer_pre_session(ptype, pkt)
+                return
+
+            if ptype in self._rs_groups:
+                log.warning(
+                    f"RSGroup type={ptype:#04x}: new session before previous "
+                    f"completed, discarding old group"
+                )
+
+            self._rs_groups[ptype] = RSGroup(
+                meta            = meta,
+                session_seq     = pkt.seq,
+                payload_type    = ptype,
+                data_shards     = self._rs_data_shards,
+                parity_shards   = self._rs_parity_shards,
+                shard_size      = config.RS_SHARD_SIZE
+            )
+            
+            # Replay shards that arrived before this group was created
+            buffered = self._pre_session_shards.pop(ptype, [])
+            if buffered:
+                for b_pkt in buffered:
+                    self._handle_rs_shard(b_pkt)
+        
+        # No group for this type yet - buffer shard
+        if ptype not in self._rs_groups:
+            self._buffer_pre_session(ptype, pkt)
+            return
+        
+        # Feed shard into group
+        result = self._rs_groups[ptype].feed_shard(pkt, self._rs)
+        
+        # Group complete -- feed_shard() return the block's data
+        if result is not None:
+            if self._block_complete_cb:
+                try:
+                    self._block_complete_cb(pkt.seq, ptype, result)
+                    
+                except Exception as e:
+                    log.error(f"on_block_complete callback raised: {e}")
+            del self._rs_groups[ptype]
+
+    def _buffer_pre_session(self, ptype: int, pkt: TelemetryPacket):
+        # Buffer a shard that arrived before its RSGroup was created
+        buf = self._pre_session_shards.setdefault(ptype, [])
+        buf.append(pkt)
+        
+    def _pop_latest_meta(self, before_seq: int) -> Optional[TransmissionMeta]:
+        earlier_seqs = [
+            seq for seq in self._pending_meta
+            if seq < before_seq
+        ]
+        if not earlier_seqs:
+            return None
+        latest_seq = max(earlier_seqs)
+        return self._pending_meta.pop(latest_seq)
 
     # I read this to understand how to actually get data from the serial stream
     # This is the main loop to read from the connected serial stream

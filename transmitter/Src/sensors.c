@@ -84,7 +84,18 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
 
     uint16_t data_per_block = DATA_SHARDS * BLOCK_SIZE; // 128 bytes of usable data per block
     size_t nr_blocks = (dataSize + data_per_block - 1) / data_per_block;
-
+    
+    /* This packet sends the total data size of the entire large payload -- needed to work out blocks expected in receiver */
+    TelemetryPacket_t meta_packet = {0};
+    uint32_t total_size = (uint32_t)dataSize;
+    createPacket(&meta_packet, &total_size, PACKET_TYPE_RS_META, cur_seq);
+    if (xQueueSend(queue, &meta_packet, pdMS_TO_TICKS(10)) != pdPASS)
+    {
+        taskENTER_CRITICAL();
+        (*dropped_packets)++;
+        taskEXIT_CRITICAL();
+    }
+    
     TelemetryPacket_t packet = {0};
     FragmentMeta_t meta = {0};
 
@@ -92,23 +103,29 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
     {
         initShardPtrTable();
 
+        /* Base byte offset into the source data for this block */
         size_t base_offset = b * data_per_block;
 
         /* Fill one block shard of data */
         for (int i = 0; i < DATA_SHARDS; i++)
         {
+            /* Offset into source data for this shard */
             size_t offset = base_offset + (i * BLOCK_SIZE);
+
+            /* How many source bytes remain from this offset onwards */
             size_t remaining = (offset < dataSize) ? (dataSize - offset) : 0;
 
+            /* Copy at most BLOCK_SIZE bytes and clamp if this exceeds whats available */
             size_t capacity   = BLOCK_SIZE;
             size_t copy_size  = (remaining > capacity) ? capacity : remaining;
 
+            /* Copy real data into shard */
             if (remaining > 0)
             {
                 memcpy(data_shards[i], bytes + offset, copy_size);
             }
 
-            /* Fill unused remainder with 0's */
+            /* Fill unused remainder with 0's -- receiver trims these 0's */
             if (copy_size < BLOCK_SIZE)
             {
                 memset(data_shards[i] + copy_size, 0, BLOCK_SIZE - copy_size);
@@ -121,10 +138,10 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
         /* Enqueue data immediately after */
         for (int i = 0; i < SHARDS_PER_BLOCK; i++) /* i = 0 -> DATA_SHARDS + PARITY_SHARDS */
         {
-            meta.block_id = b;
-            meta.frag_idx = i;
-            meta.frag_total = SHARDS_PER_BLOCK;
-            meta.len = BLOCK_SIZE;
+            meta.block_id = b;                   /* What block within this large payload */
+            meta.frag_idx = i;                   /* which shard within this block */
+            meta.frag_total = SHARDS_PER_BLOCK;  /* Data + Parity shard amount per block */
+            meta.len = BLOCK_SIZE;               /* Bytes in this shard payload */
 
             createFragmentPacket(&packet, shards[i], type, cur_seq, meta, reliable);
 

@@ -14,6 +14,7 @@ PACKET_TYPE_IMU        0x03
 PACKET_TYPE_BATTERY    0x04
 PACKET_TYPE_IMAGE      0x05
 PACKET_TYPE_RETRANSMIT 0x06
+PACKET_TYPE_RS_META    0x07
 
 STM32 Telemetry UART Receiver
 ==============================
@@ -60,6 +61,15 @@ MAX_PAYLOAD_SIZE = 32
 CRC_POLY        = 0x1021
 CRC_INIT        = 0xFFFF 
 
+PACKET_TYPE_GNSS       =0x01
+PACKET_TYPE_BARO       =0x02
+PACKET_TYPE_IMU        =0x03
+PACKET_TYPE_BATTERY    =0x04
+PACKET_TYPE_IMAGE      =0x05
+PACKET_TYPE_RETRANSMIT =0x06
+PACKET_TYPE_RS_META    =0x07
+
+
 class PacketType(IntEnum):
     GNSS       = 0x01
     BARO       = 0x02
@@ -77,7 +87,7 @@ RS_SHARD_SIZE = 32
 # https://www.digitalocean.com/community/tutorials/python-struct-pack-unpack
 # https://docs.python.org/3/library/struct.html
 # < for little endian (which is what the TX uses)
-HEADER_FMT       = "<BBIHBHBB"
+HEADER_FMT       = "<BBIHBBBB"
 HEADER_SIZE      = struct.calcsize(HEADER_FMT)
 TRAILER_FMT      = "<HB" 
 TRAILER_SIZE     = struct.calcsize(TRAILER_FMT)

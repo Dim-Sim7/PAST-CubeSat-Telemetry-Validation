@@ -3,6 +3,7 @@
 from typing import List, Optional
 from telemetry_receiver import log
 import config
+from rs_c_wrapper import *
 """_summary_
 
 This class represents one RS block that is stored within an RS Group
@@ -25,7 +26,7 @@ class RSBlock:
         self.total_shards = data_shards + parity_shards
         self.shard_size = shard_size
         
-        self.shards: List[Optional[bytearray]] = [None] * self.total_shards #dict of 6 shards
+        self.shards: List[Optional[bytearray]] = [None] * self.total_shards #list of 6 shards
         self.received = 0 # counter to keep track of how many shards is received
         
     def feed(self, frag_index: int, raw_payload: bytes) -> bool:
@@ -45,7 +46,7 @@ class RSBlock:
         if self.shards[frag_index] is not None:
             log.warning(f"RSBlock block ={self.block_id}: "
                         f"frag_index {frag_index} duplicate "
-                        f"(total=(self.total_shards))")
+                        f"(total={self.total_shards})")
             return False
         
         shard = bytearray(self.shard_size)
@@ -63,12 +64,12 @@ class RSBlock:
     def missing_indices(self) -> List[int]:
         # returns the indices of missing shards
         missing = []
-        for i in enumerate(self.shards):
-            if i is None:
+        for i, shard in enumerate(self.shards):
+            if shard is None:
                 missing.append(i)
         return missing
     
-    def decode(self, rs) -> bytes:
+    def decode_block(self, rs: ReedSolomon) -> bytes:
         shards = [] # raw byte array of data
         marks = [] # 1 = missing, 0 = data
         
@@ -82,7 +83,8 @@ class RSBlock:
                 marks.append(0)
                 
 
-        ok = rs.reconstruct(shards, marks)
+        # attempt to decode this block
+        ok = rs.call_rs_decode(shards, marks)
         if not ok:
             raise ValueError(
                 f"RSBlock block={self.block_id}: RS decode failed — "
