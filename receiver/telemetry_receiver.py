@@ -13,8 +13,8 @@ import struct
 import time
 from typing import Callable, Optional
 import serial
-from receiver import config
-from receiver.telemetry_packet import TelemetryPacket
+import config
+from telemetry_packet import TelemetryPacket
 from rs_manager import RSManager
 # Error Logging 
 # https://docs.python.org/3/library/logging.html

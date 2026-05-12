@@ -2,7 +2,7 @@
 # https://realpython.com/python-bindings-overview/#ctypes
 
 import ctypes
-so_file = "receiver/librs.so"
+so_file = "librs.so"
 
 rs_functions = ctypes.CDLL(so_file)
 

@@ -1,9 +1,9 @@
 
 
 from time import time
-from telemetry_receiver import log
-from receiver.telemetry_packet import TelemetryPacket
-from receiver.telemetry_receiver import TelemetryReceiver
+
+from telemetry_packet import TelemetryPacket
+from telemetry_receiver import TelemetryReceiver
 import config
 from payload_processing import *
 
@@ -38,7 +38,7 @@ def handle_block(session_seq: int, packet_type: int, data: bytes):
     
 if __name__ == "__main__":
     with TelemetryReceiver(port=config.SERIAL_PORT, comm_params=config.SENSOR_PARAMS) as rx:
-        rx.on_packet(handle_packet) # store completed packets / blocks on disk and display data
+        rx.on_packet(handle_packet)
         rx.on_block_complete(handle_block)
         rx.run_forever()
     

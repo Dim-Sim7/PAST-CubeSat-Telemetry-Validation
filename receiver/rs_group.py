@@ -4,9 +4,8 @@ import logging
 
 
 
-from receiver import config
-from receiver.rs_block import RSBlock
-from receiver.telemetry_receiver import log
+import config
+from rs_block import RSBlock
 from telemetry_packet import TelemetryPacket
 
 # Meta packet payload — just uint32_t total_size
@@ -14,6 +13,8 @@ from telemetry_packet import TelemetryPacket
 META_FMT  = "<I"
 META_SIZE = struct.calcsize(META_FMT)   # 4 bytes
 
+
+log = logging.getLogger(__name__)
 
 class TransmissionMeta:
     """

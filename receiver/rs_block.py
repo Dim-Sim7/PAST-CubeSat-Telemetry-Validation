@@ -1,7 +1,7 @@
 
 
+import logging
 from typing import List, Optional
-from telemetry_receiver import log
 import config
 from rs_c_wrapper import *
 """_summary_
@@ -16,6 +16,13 @@ Can reconstruct as long as any DATA_SHARDS shards arrive.
 Shards that fail CRC upstream are never fed in — they count as erasures.
 
 """
+logging.basicConfig(
+    filename='telemetry_receiver.log',
+    level=logging.DEBUG,
+    format="%(asctime)s [%(levelname)s] %(message)s"
+)
+log = logging.getLogger(__name__)
+
 class RSBlock:
     def __init__(self, block_id: int, data_shards: int = config.RS_DATA_SHARDS,
                  parity_shards: int = config.RS_PARITY_SHARDS, shard_size: int = config.RS_SHARD_SIZE):

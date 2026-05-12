@@ -2,9 +2,8 @@ import struct
 import csv
 import os
 from datetime import datetime
-from receiver.telemetry_packet import TelemetryPacket
+from telemetry_packet import TelemetryPacket
 from telemetry_receiver import log
-from receiver import config
 
 # GNSSData_t:     float time, double lat, double lon, float alt
 GNSS_FMT  = "<fddf"
@@ -107,6 +106,7 @@ def handle_battery(pkt: TelemetryPacket):
         log.warning(f"Battery payload too short: {len(pkt.payload)}")
         return
     hours, minutes, percent, status_raw = struct.unpack_from(BATT_FMT, pkt.payload, 0)
+    # strip null bytes and convert to python string
     status = status_raw.rstrip(b'\x00').decode('utf-8', errors='replace')
     log.info(
         f"BATTERY seq={pkt.seq} "

@@ -49,7 +49,7 @@ import struct
 
 import serial
 
-SERIAL_PORT     = 'dev/ttyUSB0'
+SERIAL_PORT     = '/dev/ttyUSB0'
 BAUD_RATE       = 115200
 BYTE_SIZE       = serial.EIGHTBITS
 STOP_BITS       = serial.STOPBITS_ONE

@@ -1,12 +1,14 @@
 
+import logging
 from typing import Dict, Optional
 
-from receiver import config
-from receiver.rs_group import RSGroup, TransmissionMeta
-from receiver.telemetry_packet import TelemetryPacket
-from receiver.telemetry_receiver import log
-from receiver.rs_c_wrapper import ReedSolomon
+import config
+from rs_group import RSGroup, TransmissionMeta
+from telemetry_packet import TelemetryPacket
 
+from rs_c_wrapper import ReedSolomon
+
+log = logging.getLogger(__name__)
 
 class RSManager:
     def __init__(self, data_shards: int, parity_shards: int):
