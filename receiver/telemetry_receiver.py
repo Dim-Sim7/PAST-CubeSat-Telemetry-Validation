@@ -42,15 +42,15 @@ class TelemetryReceiver:
         self._rs_manager = RSManager(rs_data_shards, rs_parity_shards)
 
         self._packet_cb: Optional[Callable[[TelemetryPacket], None]] = None
-        self._block_complete_cb: Optional[Callable[[int, int, bytes], None]] = None
+        self._group_complete_cb: Optional[Callable[[int, int, bytes], None]] = None
 
     # register handler for crc only packets
     def on_packet(self, cb: Callable[[TelemetryPacket], None]):
         self._packet_cb = cb
  
     # register handler for RS decoded blocks
-    def on_block_complete(self, cb: Callable[[int, int, bytes], None]):
-        self._block_complete_cb = cb
+    def on_group_complete(self, cb: Callable[[int, int, bytes], None]):
+        self._group_complete_cb = cb
 
     def connect(self):
         self._ser = serial.Serial(
@@ -150,9 +150,9 @@ class TelemetryReceiver:
 
         group_id , packet_type, data = result
 
-        if self._block_complete_cb:
+        if self._group_complete_cb:
             try:
-                self._block_complete_cb(
+                self._group_complete_cb(
                     group_id,
                     packet_type,
                     data,

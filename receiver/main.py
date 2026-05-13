@@ -28,7 +28,7 @@ def handle_packet(pkt: TelemetryPacket):
     else:
         log.warning(f"Unknown packet type: {pkt.type:#04x} seq={pkt.seq}")
 
-def handle_block(group_id: int, packet_type: int, data: bytes):
+def handle_group(group_id: int, packet_type: int, data: bytes):
     if packet_type == config.PACKET_TYPE_IMAGE:
         #save image to file 
         path = f"image_{group_id}.jpg"
@@ -39,6 +39,6 @@ def handle_block(group_id: int, packet_type: int, data: bytes):
 if __name__ == "__main__":
     with TelemetryReceiver(port=config.SERIAL_PORT, comm_params=config.SENSOR_PARAMS) as rx:
         rx.on_packet(handle_packet)
-        rx.on_block_complete(handle_block)
+        rx.on_group_complete(handle_group)
         rx.run_forever()
     
