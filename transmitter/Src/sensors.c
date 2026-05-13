@@ -79,15 +79,15 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
     if (dataSize == 0) return;
     initShardPtrTable();
     const uint8_t* bytes = (const uint8_t*) data;
-
     reed_solomon* rs = reed_solomon_new(DATA_SHARDS, PARITY_SHARDS);
-
+    
     uint16_t data_per_block = DATA_SHARDS * BLOCK_SIZE; // 128 bytes of usable data per block
     size_t nr_blocks = (dataSize + data_per_block - 1) / data_per_block;
     
     /* This packet sends the total data size of the entire large payload -- needed to work out blocks expected in receiver */
-    TelemetryPacket_t meta_packet = {0};
+    uint16_t group_id = (uint16_t)(*cur_seq);
     uint32_t total_size = (uint32_t)dataSize;
+    TelemetryPacket_t meta_packet = {0};
     createPacket(&meta_packet, &total_size, PACKET_TYPE_RS_META, cur_seq);
     if (xQueueSend(queue, &meta_packet, pdMS_TO_TICKS(10)) != pdPASS)
     {
@@ -141,6 +141,7 @@ void processFragmentData(QueueHandle_t queue, volatile uint32_t* cur_seq,
             meta.block_id = b;                   /* What block within this large payload */
             meta.frag_idx = i;                   /* which shard within this block */
             meta.frag_total = SHARDS_PER_BLOCK;  /* Data + Parity shard amount per block */
+            meta.group_id = group_id;            /* Unique id for this RS group */
             meta.len = BLOCK_SIZE;               /* Bytes in this shard payload */
 
             createFragmentPacket(&packet, shards[i], type, cur_seq, meta, reliable);

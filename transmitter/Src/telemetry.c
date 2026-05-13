@@ -44,6 +44,7 @@ void createPacket(TelemetryPacket_t* packet, const void* data, PacketType_e type
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
     /* This is an isolated packet, not part of a larger group */
+    packet->group_id = 0;
     packet->block_id = 0;
     packet->frag_index = 0;
     packet->frag_total = 0;
@@ -67,6 +68,7 @@ void createFragmentPacket(TelemetryPacket_t* packet, const void* data, PacketTyp
     taskENTER_CRITICAL();
     packet->seq = (*cur_seq)++;
     taskEXIT_CRITICAL();
+    packet->group_id = fragMeta.group_id;
     packet->block_id = fragMeta.block_id;
     packet->frag_index = fragMeta.frag_idx;
     packet->frag_total = fragMeta.frag_total;

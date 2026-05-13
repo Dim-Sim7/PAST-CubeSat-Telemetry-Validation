@@ -40,9 +40,12 @@ typedef struct __packed
     uint8_t sof;
     uint8_t type;
     uint32_t seq;        /* Packet sequence ID */
+
+    uint16_t group_id;   /* id of an RS group */
     uint16_t block_id;   /* identifier within a block -> see processLargePayloadData()*/
     uint8_t frag_index;  /* 0, 1, 2, 3, 4, 5 */
-    uint8_t frag_total; /* SHARDS PER BLOCK */
+    uint8_t frag_total;  /* SHARDS PER BLOCK */
+    
     uint8_t reliable;
     uint8_t len;
     uint8_t payload[MAX_PAYLOAD_SIZE];
@@ -55,8 +58,10 @@ typedef struct
     uint16_t block_id;
     uint8_t frag_idx;
     uint8_t frag_total;
+    uint16_t group_id;
     uint16_t len;
 } FragmentMeta_t;
+
 
 #define MAX_PACKET_SIZE sizeof(TelemetryPacket_t)
 
