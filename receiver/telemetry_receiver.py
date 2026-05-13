@@ -148,12 +148,12 @@ class TelemetryReceiver:
         if result is None:
             return
 
-        session_seq, packet_type, data = result
+        group_id , packet_type, data = result
 
         if self._block_complete_cb:
             try:
                 self._block_complete_cb(
-                    session_seq,
+                    group_id,
                     packet_type,
                     data,
                 )

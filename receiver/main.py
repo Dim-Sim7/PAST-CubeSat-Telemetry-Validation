@@ -28,10 +28,10 @@ def handle_packet(pkt: TelemetryPacket):
     else:
         log.warning(f"Unknown packet type: {pkt.type:#04x} seq={pkt.seq}")
 
-def handle_block(session_seq: int, packet_type: int, data: bytes):
+def handle_block(group_id: int, packet_type: int, data: bytes):
     if packet_type == config.PACKET_TYPE_IMAGE:
         #save image to file 
-        path = f"image_{session_seq}.jpg"
+        path = f"image_{group_id}.jpg"
         with open(path, "wb") as f:
             f.write(data)
         log.info(f"Image saved: {path} ({len(data)} bytes)")
