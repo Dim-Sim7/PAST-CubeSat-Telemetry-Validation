@@ -167,8 +167,6 @@ class TelemetryReceiver:
     # This is the main loop to read from the connected serial stream
     # https://www.pyserial.org/docs/reading-data
     def run_forever(self):
-        if self._ser and self._ser.is_open:
-            return
         log.info("Listening… (Ctrl-C to stop)")
         try:
             while True:
@@ -198,7 +196,7 @@ def parse_packet(raw: bytes) -> Optional[TelemetryPacket]:
     
     # try make the Telemetry Packet header
     try:
-        sof, ptype, seq, block_id, frag_index, frag_total, reliable, plen = \
+        sof, ptype, seq, group_id, block_id, frag_index, frag_total, reliable, plen = \
                 struct.unpack_from(config.HEADER_FMT, raw, 0)
     except struct.error as e:
         log.error(f"parse_packet: header unpack failed: {e}")
@@ -220,7 +218,7 @@ def parse_packet(raw: bytes) -> Optional[TelemetryPacket]:
     crc_calc = calculate_crc(raw[:config.HEADER_SIZE + config.MAX_PAYLOAD_SIZE])
     
     return TelemetryPacket(
-        sof=sof, type=ptype, seq=seq, block_id=block_id,
+        sof=sof, type=ptype, seq=seq, group_id=group_id, block_id=block_id,
         frag_index=frag_index, frag_total=frag_total,
         reliable=reliable, len=plen, payload=payload,
         crc_rx=crc_rx, crc_calc=crc_calc, eof=eof, raw=raw

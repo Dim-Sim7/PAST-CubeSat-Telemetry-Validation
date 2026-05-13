@@ -24,7 +24,7 @@ class TransmissionMeta:
     """
  
     def __init__(self, total_size: int):
-        self.total_size = total_size
+        self.total_size = total_size # total size of entire RS payload
 
     @classmethod
     def from_packet(cls, pkt : TelemetryPacket) -> "TransmissionMeta":
@@ -53,13 +53,14 @@ class RSGroup:
     Only one type of large payload can be accumulated (i,e IMAGE, DATA SNAPSHOT)
     """
     
-    def __init__(self, meta: TransmissionMeta, session_seq: int, payload_type: int,
+    def __init__(self, meta: TransmissionMeta, session_seq: int, payload_type: int, group_id: int,
                  data_shards:   int = config.RS_DATA_SHARDS,
                  parity_shards: int = config.RS_PARITY_SHARDS,
                  shard_size:    int = config.RS_SHARD_SIZE):
         
         self.session_seq = session_seq
         self.payload_type = payload_type
+        self.group_id = group_id
         self.total_size = meta.total_size
         self.data_shards = data_shards
         self.parity_shards = parity_shards

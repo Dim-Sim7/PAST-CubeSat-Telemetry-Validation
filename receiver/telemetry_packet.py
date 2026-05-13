@@ -9,6 +9,7 @@ class TelemetryPacket:
     sof:        int
     type:       int
     seq:        int
+    group_id:   int
     block_id:   int
     frag_index: int
     frag_total: int

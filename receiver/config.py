@@ -79,7 +79,7 @@ RS_SHARD_SIZE = 32
 # https://www.digitalocean.com/community/tutorials/python-struct-pack-unpack
 # https://docs.python.org/3/library/struct.html
 # < for little endian (which is what the TX uses)
-HEADER_FMT       = "<BBIHBBBB"
+HEADER_FMT       = "<BBIHHBBBB"
 HEADER_SIZE      = struct.calcsize(HEADER_FMT)
 TRAILER_FMT      = "<HB" 
 TRAILER_SIZE     = struct.calcsize(TRAILER_FMT)
