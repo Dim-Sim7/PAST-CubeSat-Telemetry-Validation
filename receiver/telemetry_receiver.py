@@ -30,11 +30,13 @@ class TelemetryReceiver:
     def __init__(self, port: str, comm_params: dict,
                  rs_data_shards:   int = config.RS_DATA_SHARDS,
                  rs_parity_shards: int = config.RS_PARITY_SHARDS):
-        
         self._port        = port
         self._comm_params = comm_params
         self._ser         = None
         self._buf         = bytearray()
+        
+        self._expected_seq: Optional[int] = None
+        self._reorder_buffer: dict[int, TelemetryPacket] = {}
         
         self._rs_data_shards = rs_data_shards
         self._rs_parity_shards = rs_parity_shards
@@ -118,17 +120,71 @@ class TelemetryReceiver:
             if not pkt.crc_ok:
                 log.debug(f"CRC not matching: discarding packet {pkt.seq}")
                 continue
-            
+                    
             log.debug(str(pkt))
             
             # Route
-            if not pkt.is_fragmented:
-                self._handle_single(pkt)
-            else:
-                self._handle_rs_shard(pkt)
+            self._handle_ordering(pkt)
+    
+    def _handle_ordering(self, pkt: TelemetryPacket):
+        # first packet establish seq baseline
+        if self._expected_seq is None:
+            self._expected_seq = pkt.seq
+        
+        # old/duplicate packet
+        if pkt.seq < self._expected_seq:
+            log.debug(
+                f"Discarding old packet seq={pkt.seq} "
+                f"(expected={self._expected_seq})"
+            )
+            return
+        
+        # future packet - buffer
+        if pkt.seq > self._expected_seq:
+            self._reorder_buffer[pkt.seq] = pkt
+            log.debug(
+                f"Out-of-order packet seq={pkt.seq} "
+                f"stored in reorder buffer "
+                f"(expected={self._expected_seq})"
+            )
+            return
+        
+        # current packet - process it
+        self._process_in_order(pkt)
+        
+        # increment expected 
+        self._expected_seq = (self._expected_seq + 1) & 0xFFFFFFFF
+        
+        # if reorder buffer has > 31 packets then flush it
+        if len(self._reorder_buffer) > 31:
+            log.warning(f"Reorder buffer overflow ({len(self._reorder_buffer)} packets)")
+            
+            seqs = sorted(self._reorder_buffer.keys()) # sort buffer
+            # process buffered packets in sorted order
+            for seq in seqs:
+                pkt = self._reorder_buffer[seq]
+                self._process_in_order(pkt)
                 
-    def _handle_single(self, pkt: TelemetryPacket):
+            self._expected_seq = (seqs[-1] + 1) & 0xFFFFFFFF
+            self._reorder_buffer.clear()
+                
+        # release any buffered packet that match the current expected seq
+        while self._expected_seq in self._reorder_buffer:
+            # retrieve buffered
+            buffered = self._reorder_buffer.pop(self._expected_seq)
+            log.debug(f"Applying buffered packet seq = {buffered.seq}")
+            # process
+            self._process_in_order(buffered)
+            # increment
+            self._expected_seq = (self._expected_seq + 1) & 0xFFFFFFFF
 
+    def _process_in_order(self, pkt: TelemetryPacket):
+        if not pkt.is_fragmented:
+            self._handle_single(pkt)
+        else:
+            self._handle_rs_shard(pkt)
+        
+    def _handle_single(self, pkt: TelemetryPacket):
         if pkt.type == config.PACKET_TYPE_RS_META:
             self._rs_manager.add_meta(pkt)
             return
@@ -141,7 +197,6 @@ class TelemetryReceiver:
                 log.error(f"on_packet callback raised: {e}")
     
     def _handle_rs_shard(self, pkt: TelemetryPacket):
-
         # if block is complete, add_shard returns
         result = self._rs_manager.add_shard(pkt)
 
