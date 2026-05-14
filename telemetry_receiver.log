@@ -1,0 +1,24 @@
+2026-05-13 14:53:56,171 [ERROR] parse_packet: bad size 48 (expected 49)
+2026-05-13 14:53:56,171 [ERROR] parse_packet: bad size 50 (expected 49)
+2026-05-13 14:53:56,173 [DEBUG] Sync: discarding 2 bytes before SOF
+2026-05-13 14:53:56,173 [DEBUG] Pkt[CRC type=1 seq=99 block=0 frag=0/0 reliable=0 len=9 CRC=OK framing=OK]
+2026-05-13 14:53:56,174 [DEBUG] CRC not matching: discarding packet 1
+2026-05-13 14:53:56,174 [DEBUG] Pkt[CRC type=2 seq=1 block=0 frag=0/0 reliable=0 len=6 CRC=OK framing=OK]
+2026-05-13 14:53:56,174 [DEBUG] Pkt[CRC type=2 seq=2 block=0 frag=0/0 reliable=0 len=6 CRC=OK framing=OK]
+2026-05-13 14:53:56,174 [DEBUG] Pkt[CRC type=2 seq=3 block=0 frag=0/0 reliable=0 len=6 CRC=OK framing=OK]
+2026-05-13 14:53:56,174 [DEBUG] Pkt[CRC type=1 seq=5 block=0 frag=0/0 reliable=0 len=1 CRC=OK framing=OK]
+2026-05-13 14:53:56,174 [DEBUG] Pkt[FEC type=5 seq=1 block=0 frag=0/6 reliable=0 len=32 CRC=OK framing=OK]
+2026-05-13 14:53:56,175 [DEBUG] Pkt[CRC type=7 seq=1 block=0 frag=0/0 reliable=1 len=4 CRC=OK framing=OK]
+2026-05-13 14:53:56,175 [WARNING] RSBlock block =0: frag_index 0 duplicate (total=6)
+2026-05-13 14:53:56,175 [WARNING] RSBlock block =0: frag_index 99 out of range (total=(self.total_shards))
+2026-05-13 14:53:56,176 [INFO] RSGroup created: type=0x05 seq=0 total_size=128 nr_blocks=1
+2026-05-13 14:53:56,176 [INFO] RSGroup created: type=0x05 seq=0 total_size=256 nr_blocks=2
+2026-05-13 14:53:56,176 [INFO] RSGroup created: type=0x05 seq=0 total_size=300 nr_blocks=3
+2026-05-13 14:53:56,176 [INFO] RSGroup created: type=0x05 seq=0 total_size=512 nr_blocks=4
+2026-05-13 14:53:56,176 [INFO] RSGroup created: type=0x05 seq=0 total_size=1 nr_blocks=1
+2026-05-13 14:53:56,177 [INFO] RSGroup created: type=0x05 seq=0 total_size=128 nr_blocks=1
+2026-05-13 14:53:56,177 [INFO] Stored RS meta: group=5 size=256
+2026-05-13 14:53:56,177 [WARNING] No RS meta for group=0 seq=0
+2026-05-13 14:53:56,178 [INFO] Stored RS meta: group=10 size=128
+2026-05-13 14:53:56,178 [INFO] Stored RS meta: group=11 size=128
+2026-05-13 14:53:56,178 [ERROR] Bad RS meta packet: RS meta packet too short: 2 < 4

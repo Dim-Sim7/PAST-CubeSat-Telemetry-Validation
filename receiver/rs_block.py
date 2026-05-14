@@ -67,15 +67,6 @@ class RSBlock:
     def can_decode(self) -> bool:
         return self.received >= self.data_shards
     
-    @property
-    def missing_indices(self) -> List[int]:
-        # returns the indices of missing shards
-        missing = []
-        for i, shard in enumerate(self.shards):
-            if shard is None:
-                missing.append(i)
-        return missing
-    
     def decode_block(self, rs: ReedSolomon) -> bytes:
         shards = [] # raw byte array of data
         marks = [] # 1 = missing, 0 = data

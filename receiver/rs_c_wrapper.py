@@ -9,6 +9,19 @@ rs_functions = ctypes.CDLL(so_file)
 rs_functions.fec_init.restype = None
 rs_functions.fec_init.argtypes = []
 
+#int reed_solomon_encode(reed_solomon* rs,
+#        unsigned char** data_blocks,
+ #       unsigned char** fec_blocks,
+ #       int block_size);
+rs_functions.reed_solomon_encode.restype = ctypes.c_int
+rs_functions.reed_solomon_encode.argtypes = [
+    ctypes.c_void_p,
+    ctypes.POINTER(ctypes.c_char_p),
+    ctypes.POINTER(ctypes.c_char_p),
+    ctypes.c_int,
+]
+
+
 # reed_solomon* reed_solomon_new(int data_shards, int parity_shards);
 rs_functions.reed_solomon_new.restype = ctypes.c_void_p #void pointer
 rs_functions.reed_solomon_new.argtypes = [ctypes.c_int, ctypes.c_int]
@@ -131,7 +144,7 @@ class ReedSolomon:
         ret = rs_functions.reed_solomon_decode(
             self._rs,
             data_ptrs,   # all 4 data shards
-            size,        # 64 bytes per shard
+            size,        # 32 bytes per shard
             fec_ptrs,    # the parity shards for recovery
             fec_nos_arr, # which parity slots they came from
             erased_arr,  # which data slots are missing
@@ -142,4 +155,41 @@ class ReedSolomon:
         for erased_shard in erased:
             shards[erased_shard][:] = bytes(c_data_bufs[erased_shard])
             
+        return ret == 0
+    
+    def reconstruct(self, shards, marks):
+
+        total = self.total_shards
+        size  = len(shards[0])
+
+        # Build mutable C buffers
+        c_shards = []
+
+        for shard in shards:
+
+            buf = (ctypes.c_ubyte * size).from_buffer(shard)
+
+            c_shards.append(buf)
+
+        # unsigned char**
+        ShardPtr = ctypes.POINTER(ctypes.c_ubyte)
+
+        shard_ptrs = (ShardPtr * total)(
+            *[
+                ctypes.cast(buf, ShardPtr)
+                for buf in c_shards
+            ]
+        )
+
+        # marks array
+        marks_arr = (ctypes.c_ubyte * total)(*marks)
+
+        ret = rs_functions.reed_solomon_reconstruct(
+            self._rs,
+            shard_ptrs,
+            marks_arr,
+            total,
+            size
+        )
+
         return ret == 0
