@@ -42,7 +42,7 @@ class TelemetryReceiver:
         self._rs_parity_shards = rs_parity_shards
         
         self._rs_manager = RSManager(rs_data_shards, rs_parity_shards)
-
+        self._last_rs_cleanup = time.monotonic()
         self._packet_cb: Optional[Callable[[TelemetryPacket], None]] = None
         self._group_complete_cb: Optional[Callable[[int, int, bytes], None]] = None
 
@@ -155,18 +155,22 @@ class TelemetryReceiver:
         # increment expected 
         self._expected_seq = (self._expected_seq + 1) & 0xFFFFFFFF
         
-        # if reorder buffer has > 31 packets then flush it
+        # if reorder buffer has > 31 packets then retrieve the latest packet (lowest seq)
         if len(self._reorder_buffer) > 31:
             log.warning(f"Reorder buffer overflow ({len(self._reorder_buffer)} packets)")
             
-            seqs = sorted(self._reorder_buffer.keys()) # sort buffer
-            # process buffered packets in sorted order
-            for seq in seqs:
-                pkt = self._reorder_buffer[seq]
-                self._process_in_order(pkt)
-                
-            self._expected_seq = (seqs[-1] + 1) & 0xFFFFFFFF
-            self._reorder_buffer.clear()
+            # take earliest packet only
+            earliest_seq = min(self._reorder_buffer.keys())
+            
+            pkt = self._reorder_buffer.pop(earliest_seq)
+            log.warning(f"Forcing reorder advance: "
+                f"expected={self._expected_seq}, "
+                f"advancing to seq={earliest_seq}")
+
+            self._process_in_order(pkt)
+            # increment expected from the earliest_seq
+            self._expected_seq = (earliest_seq + 1) & 0xFFFFFFFF
+            
                 
         # release any buffered packet that match the current expected seq
         while self._expected_seq in self._reorder_buffer:
@@ -225,6 +229,13 @@ class TelemetryReceiver:
         log.info("Listening… (Ctrl-C to stop)")
         try:
             while True:
+                now = time.monotonic()
+                
+                # periodic RS cleanup
+                if now - self._last_rs_cleanup > 2.0:
+                    self._rs_manager.cleanup_expired()
+                    self._last_rs_cleanup = now
+                
                 if self._ser is None:
                     raise RuntimeError("Serial port not connected")
                 n = self._ser.in_waiting

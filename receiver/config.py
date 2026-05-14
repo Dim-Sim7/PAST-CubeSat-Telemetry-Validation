@@ -55,6 +55,8 @@ BYTE_SIZE       = serial.EIGHTBITS
 STOP_BITS       = serial.STOPBITS_ONE
 PARITY          = serial.PARITY_NONE
 
+
+
 SOF_BYTE        = 0xAA
 EOF_BYTE        = 0x55
 MAX_PAYLOAD_SIZE = 32
@@ -74,6 +76,9 @@ PACKET_TYPE_RS_META    =0x07
 RS_DATA_SHARDS   = 4
 RS_PARITY_SHARDS = 2
 RS_SHARD_SIZE = 32
+
+RS_GROUP_IDLE_TIMEOUT = 3.0
+RS_GROUP_HARD_TIMEOUT = 15.0
 
 # Struct layout 
 # https://www.digitalocean.com/community/tutorials/python-struct-pack-unpack

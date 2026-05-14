@@ -1,7 +1,7 @@
 from typing import Dict, List, Optional
 import struct
 import logging
-
+import time
 
 
 import config
@@ -66,6 +66,8 @@ class RSGroup:
         self.parity_shards = parity_shards
         self.shard_size = shard_size
         
+        self.created = time.monotonic()
+        self.last_update = self.created
         # Derive nr_blocks - same as processFragmentData() in C transmitter
         # data_per_block = DATA_SHARDS * BLOCK_SIZE
         data_per_block = data_shards * shard_size
@@ -91,6 +93,7 @@ class RSGroup:
         pkt : TelemetryPacket
         rs : ReedSolomon instance
         """
+        self.last_update = time.monotonic()
         block_id = pkt.block_id
         
         if block_id >= self.nr_blocks:
@@ -138,6 +141,14 @@ class RSGroup:
     @property
     def complete(self) -> bool:
         return len(self._decoded_blocks) == self.nr_blocks
+    
+    @property
+    def age(self) -> float:
+        return time.monotonic() - self.created
+
+    @property
+    def idle(self) -> float:
+        return time.monotonic() - self.last_update
     
     def reassemble(self) -> bytes:
         """

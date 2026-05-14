@@ -74,4 +74,26 @@ class RSManager:
             result,
         )
         
-            
+    # timeout cleanup for rs groups
+    def cleanup_expired(self):
+
+        expired = []
+
+        for group_id, group in self._groups.items():
+
+            if (
+                group.age > config.RS_GROUP_HARD_TIMEOUT
+                or
+                group.idle > config.RS_GROUP_IDLE_TIMEOUT
+            ):
+
+                log.warning(
+                    f"Expiring RSGroup {group_id} "
+                    f"decoded={len(group._decoded_blocks)}/"
+                    f"{group.nr_blocks}"
+                )
+
+                expired.append(group_id)
+
+        for group_id in expired:
+            del self._groups[group_id]
