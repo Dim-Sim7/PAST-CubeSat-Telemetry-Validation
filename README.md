@@ -6,7 +6,7 @@ The goal is to confirm the receiver handles both normal traffic and fault condit
 
 ## How it works
 
-The transmitter encodes telemetry into framed packets and sends them serially. Each packet carries a type, sequence number, payload, and an integrity check — either a CRC for simple packets or Reed-Solomon FEC for larger, fragmented payloads. The receiver syncs to the stream, parses each packet, verifies the checksum or reconstructs the RS shards, and logs everything to `telemetry_receiver.log`.
+The transmitter encodes telemetry into framed packets and sends them serially. Each packet carries a type, sequence number, payload, and an integrity check. Either a CRC for simple packets or Reed-Solomon FEC for larger, fragmented payloads. The receiver syncs to the stream, parses each packet, verifies the checksum or reconstructs the RS shards, and logs everything to `telemetry_receiver.log`.
 
 ## Building the firmware
 
